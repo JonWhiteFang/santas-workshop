@@ -36,11 +36,40 @@ namespace SantasWorkshop.Data
     /// </summary>
     public enum ResourceCategory
     {
-        RawMaterial,    // Wood, stone, iron ore
-        Refined,        // Planks, iron ingots, plastic
-        Component,      // Gears, circuits, fabric
-        Toy,            // Final products
-        Magic           // Magical resources
+        /// <summary>
+        /// Raw materials extracted from resource nodes (e.g., Wood, Iron Ore, Coal).
+        /// </summary>
+        RawMaterial,
+
+        /// <summary>
+        /// Processed materials refined from raw materials (e.g., Planks, Iron Ingots, Steel).
+        /// </summary>
+        Refined,
+
+        /// <summary>
+        /// Crafted components used in assembly (e.g., Gears, Circuits, Paint).
+        /// </summary>
+        Component,
+
+        /// <summary>
+        /// Specialized components for toy production (e.g., Wheels, Arms, Bodies).
+        /// </summary>
+        ToyPart,
+
+        /// <summary>
+        /// Complete finished toys ready for delivery (e.g., Wooden Train, Teddy Bear, Robot).
+        /// </summary>
+        FinishedToy,
+
+        /// <summary>
+        /// Magical resources and enchantments (e.g., Magic Dust, Enchanted Crystals).
+        /// </summary>
+        Magic,
+
+        /// <summary>
+        /// Resources used for power generation (e.g., Coal, Magic Crystals).
+        /// </summary>
+        Energy
     }
 
     /// <summary>

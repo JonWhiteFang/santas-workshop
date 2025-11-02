@@ -1,0 +1,193 @@
+name: Unity CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  UNITY_VERSION: 6000.2.10f1
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+jobs:
+  # Run Unity tests
+  test:
+    name: Run Unity Tests
+    runs-on: windows-latest
+    
+    steps:
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      # Cache Library folder for faster builds
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
+            Library-${{ runner.os }}-
+      
+      # Activate Unity license
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v2
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          unity-license: ${{ secrets.UNITY_LICENSE }}
+      
+      # Run EditMode tests
+      - name: Run EditMode Tests
+        uses: game-ci/unity-test-runner@v4
+        id: editmode-tests
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          test-mode: EditMode
+          artifacts-path: test-results/editmode
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          check-name: EditMode Test Results
+      
+      # Run PlayMode tests
+      - name: Run PlayMode Tests
+        uses: game-ci/unity-test-runner@v4
+        id: playmode-tests
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          test-mode: PlayMode
+          artifacts-path: test-results/playmode
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          check-name: PlayMode Test Results
+      
+      # Upload test results
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: Test Results
+          path: test-results
+      
+      # Return Unity license
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v2
+        if: always()
+
+  # Build for Windows
+  build-windows:
+    name: Build for Windows
+    runs-on: windows-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
+            Library-${{ runner.os }}-
+      
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v2
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          unity-license: ${{ secrets.UNITY_LICENSE }}
+      
+      - name: Build Windows
+        uses: game-ci/unity-builder@v4
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          target-platform: StandaloneWindows64
+          build-name: SantasWorkshop
+          builds-path: Builds
+      
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build-Windows
+          path: Builds/StandaloneWindows64
+      
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v2
+        if: always()
+
+  # Build for Linux (optional)
+  build-linux:
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
+            Library-${{ runner.os }}-
+      
+      - name: Activate Unity License
+        uses: game-ci/unity-activate@v2
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          unity-license: ${{ secrets.UNITY_LICENSE }}
+      
+      - name: Build Linux
+        uses: game-ci/unity-builder@v4
+        with:
+          unity-version: ${{ env.UNITY_VERSION }}
+          target-platform: StandaloneLinux64
+          build-name: SantasWorkshop
+          builds-path: Builds
+      
+      - name: Upload Linux Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build-Linux
+          path: Builds/StandaloneLinux64
+      
+      - name: Return Unity License
+        uses: game-ci/unity-return-license@v2
+        if: always()
+
+  # Code quality checks
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Restore Dependencies
+        run: dotnet restore
+      
+      - name: Build Solution
+        run: dotnet build --no-restore
+      
+      - name: Run Code Analysis
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+        continue-on-error: true

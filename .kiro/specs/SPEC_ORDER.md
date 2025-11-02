@@ -23,7 +23,7 @@
 - [x] **1.1: Project Setup & Architecture** (2 weeks | No dependencies)
   - Unity project with URP, folder structure, core architecture, version control
 
-- [ ] **1.2: Resource System** (2 weeks | Needs: 1.1)
+- [x] **1.2: Resource System** (2 weeks | Needs: 1.1)
   - Resource data structures, categories, manager, storage/transfer logic
 
 - [ ] **1.3: Grid & Placement System** (2 weeks | Needs: 1.1)
