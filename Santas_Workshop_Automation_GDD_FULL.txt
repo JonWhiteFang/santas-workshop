@@ -1,0 +1,239 @@
+Santa’s Workshop Automation
+Game Design Document (Full Version)
+------------------------------------------------------------
+Version: 1.0
+------------------------------------------------------------
+
+1. CORE PLAYER GOALS & PROGRESSION
+----------------------------------
+Objective: Build and optimize Santa’s automated workshop to produce high-quality toys before each Christmas. Quantity, complexity, and efficiency contribute to the Christmas Spirit Score that defines seasonal success.
+
+Seasonal Cycle:
+- In‑game year: January → December. Time can be paused or run at 1×/2×/3×.
+- Christmas Rush (Nov–Dec): increased demand and stress testing of systems; unique music layer and UI flair.
+- Christmas Eve (23:59): production halts; summary report with toy counts, grades, delivery rate, energy efficiency, and Spirit Score.
+- Carryover: Factory layout, research, unlocks, and cosmetics persist into the next year.
+
+Mission-Based Hybrid Structure:
+- Campaign missions onboard the player while unlocking systems (tutorial → mastery).
+- Post-campaign Sandbox mode continues infinitely with optional challenges and contracts.
+- No hard fail; underperformance yields coaching dialogue and softer goals next year.
+
+Example Mission Arc:
+1. The First Conveyor – build a basic line and deliver first gifts.
+2. Power Problems – introduce generators, grid, and brownout management.
+3. A Wrapping Worry – packaging automation and quality grading.
+4. Santa’s Quality Standards – S/A/B/C grades, rework loops, inspection.
+5. The Great Christmas Rush – achieve quota under time pressure.
+6. New Year, New Toys – unlock Tier II chains and research branches.
+
+------------------------------------------------------------
+2. PROGRESSION & RESEARCH
+------------------------------------------------------------
+Design Principle: Branching, open‑ended tech allowing specialization and replayability.
+
+Branches:
+- Automation & Machinery: Conveyors, inserters, splitters, smart routing, assembler tiers.
+- Energy & Power: Fuel → electric → renewable → aurora magic; storage and grid optimization.
+- Materials & Refinement: Smelting, plastics, textiles, glass; composite materials later.
+- Toy Innovation: Unlocks toy tiers and specialty machines/blueprints.
+- Logistics & Delivery: Warehouses, drones, teleport belts, dispatch optimizations.
+- Elf Management & Research: RP rate, queues, specialists, lab upgrades.
+- Magical Integration: Overclocking, enchanted machines, spirit conduits.
+- Festive & Aesthetic: Cosmetics, cheer auras, minor efficiency buffs.
+
+Synergy Nodes:
+- Aurora Generator (Energy + Magic): Clean late‑game power unlocked by cross‑branch progress.
+- Enchanted Assemblers (Automation + Magic): Temporary overclock and reduced defect rate.
+- Gift Drone Network (Logistics + Toy Innovation): Automated delivery prioritization.
+
+Progression Curve:
+1. Manual Production
+2. Early Automation
+3. Industrial Growth
+4. Magical Integration
+5. Optimization & Prestige
+
+------------------------------------------------------------
+3. RESOURCE & PRODUCTION SYSTEM
+------------------------------------------------------------
+Core Loop: Extract → Process → Assemble → Package → Deliver. Resources are infinite; extraction efficiency scales with research and technology.
+
+Resource Categories:
+- Raw: Wood, Stone, Iron Ore, Coal, Crude Plastic.
+- Refined: Metal Ingot, Plank, Plastic Sheet, Glass.
+- Components: Gear, Wheel, Cloth, Circuit Board, Spring.
+- Toy Parts: Doll Head, Train Chassis, RC Frame, Plush Body.
+- Magical: Aurora Essence, Stardust, Christmas Spirit.
+- Energy: Electricity, Magic Power (aurora conduits).
+
+Factory Systems:
+- Transport: conveyors, pipes, carts/rails, magic conveyors.
+- Storage: crates → depots → warehouses; smart IO filters.
+- Power: generators, turbines, aurora reactors; batteries.
+- Quality & Grading: speed, material grade, energy efficiency, magic infusion → S/A/B/C grades.
+
+Example Pipeline – Toy Train:
+1. Iron Ore → Smelter → Iron Ingot
+2. Wood → Sawmill → Plank
+3. Ingot + Plank → Press → Chassis & Wheels
+4. Chassis + Wheels + Paint → Assembler → Toy Train
+5. Toy Train → Wrapping Station → Wrapped Gift → Dispatch
+
+------------------------------------------------------------
+4. NARRATIVE & WORLDBUILDING
+------------------------------------------------------------
+Premise: Elves push for modernization to meet global demand. Santa leads a respectful fusion of tradition and technology. Tone is warm, humorous, and encouraging.
+
+Setting & Regions:
+- Central Workshop – cozy timber core with glowing windows.
+- Industrial Outskirts – smokestacks, rails, cranes; still festive.
+- Research Hills – cabins with telescopes and labs.
+- Aurora Fields – open plains with dancing lights; magic harvest sites.
+
+Cast:
+- Santa – benevolent leader; sets quotas and celebrates wins.
+- Tinka (Chief Engineer) – enthusiastic tutorial guide.
+- Bramble (Union Leader) – comic foil, tradition advocate.
+- Eira (Spirit Keeper) – steward of magic and balance.
+- Rudolph AI – mission/logistics assistant with witty quips.
+
+Story Acts:
+1. The First Conveyor
+2. Powering the North Pole
+3. Magic Integration
+4. The Great Christmas Rush
+5. A New Year’s Workshop
+
+------------------------------------------------------------
+5. TECHNICAL DESIGN
+------------------------------------------------------------
+Engine: Unity 2022+ LTS (URP). PC‑first.
+
+Architecture Layers:
+- Render Layer – visuals, lighting, particles, animation.
+- Simulation Layer – machines, power, logistics, recipes, world state.
+- UI Layer – UI Toolkit/Elements; async reads from sim snapshots.
+
+Core Systems:
+- Resource Manager
+- Machine Framework
+- Power Grid
+- Logistics
+- Research & Missions
+- Save/Load System
+
+Performance:
+- Chunking and spatial partitioning; update visible chunks.
+- Burst + Jobs for conveyor/item updates.
+- LOD, GPU instancing, baked lighting.
+
+------------------------------------------------------------
+6. MONETIZATION & RETENTION
+------------------------------------------------------------
+Premium single purchase (£25–£35). No microtransactions.
+
+Currencies & Rewards:
+- Christmas Spirit
+- Workshop Points
+- Aurora Shards
+
+Retention:
+- Seasonal cycle with reports.
+- Prestige resets with meta-upgrades.
+- Blueprint sharing leaderboards.
+
+------------------------------------------------------------
+7. PRODUCTION PLAN
+------------------------------------------------------------
+Team: 8–12 core; 14–18 months to 1.0.
+
+Milestones:
+- M1: Pre‑production
+- M2: Prototype
+- M3: Vertical Slice
+- M4: Alpha
+- M5: Beta
+- M6: RC + Launch
+
+Risks & Mitigations:
+- Simulation performance – ECS/Jobs
+- Save integrity – versioned schema
+- Scope creep – MoSCoW gates
+- UI complexity – progressive disclosure
+
+------------------------------------------------------------
+8. UI / UX & CONTROLS
+------------------------------------------------------------
+Philosophy: Storybook aesthetic, clarity, cozy feedback.
+
+UI Panels:
+- Build Menu, Inspector, Research Web, Mission Board, Reports, Toypedia.
+
+Controls:
+- WASD/mouse pan, R rotate, overlays F1–F4, speed 1–3.
+
+UX Flows:
+- Placement ghost with tints.
+- Research parchment animation.
+- End‑of‑year book UI.
+
+------------------------------------------------------------
+9. CONTENT SPECIFICATION
+------------------------------------------------------------
+Resources:
+- Wood, Stone, Iron Ore, Coal, Crude Plastic → Plank, Metal Ingot, Plastic Sheet, Glass → Gear, Wheel, Cloth, Circuit Board, Spring → Toy Parts → Final Toys.
+- Magical: Aurora Essence, Stardust, Christmas Spirit.
+
+Buildings:
+- Extractors, Processors, Assemblers, Packaging, Energy, Utility.
+
+Toy Chains:
+- Tier I–V toys from Wooden Train → AI Reindeer Drone.
+
+Research Nodes:
+- Conveyor → Splitters → Smart Routing
+- Coal → Wind → Battery → Aurora Reactor
+
+Balancing:
+- Throughput 1→10+/s
+- Power scaling
+- Research pacing 2–10 min
+
+------------------------------------------------------------
+10. ART & AUDIO DIRECTION
+------------------------------------------------------------
+Visual Style: Realistic isometric, Nordic festive aesthetic.
+
+Environment & Buildings:
+- Snowfall, fog, light shafts.
+- Building evolution wood→metal→enchanted.
+
+UI Art:
+- Parchment panels, brass frames, serif headers.
+
+Audio:
+- Orchestral with bells & celesta.
+- Soft mechanical SFX, magical tones, brief VO stingers.
+
+------------------------------------------------------------
+11. POST-LAUNCH & EXPANSION PLANNING
+------------------------------------------------------------
+Goal: Sustainable ecosystem with expansions & mod support.
+
+Planned Expansions:
+- The Easter Exchange – spring biome.
+- Summer Innovations – solar energy.
+- Halloween Hijinks – glow essence.
+- Global Gift Network – logistics co‑op.
+
+Events & Community:
+- Elf Appreciation Week, Aurora Surge, Great Gift Rush.
+
+KPIs & Vision:
+- Steam ≥85%, retention >25%, sessions 45–90 min.
+- Year 1: SP & modding; Year 2: expansions; Year 3+: living universe.
+
+------------------------------------------------------------
+END OF DOCUMENT
+------------------------------------------------------------

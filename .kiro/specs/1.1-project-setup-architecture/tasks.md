@@ -33,35 +33,35 @@
     - Create UI/UXML, UI/USS, UI/Assets folders
     - _Requirements: 2.6_
 
-- [ ] 3. Implement core architecture base classes
-  - [ ] 3.1 Create namespace structure and utility classes
+- [x] 3. Implement core architecture base classes
+  - [x] 3.1 Create namespace structure and utility classes
     - Create SantasWorkshop namespace with sub-namespaces (Core, Machines, Data, Utilities)
     - Implement Singleton<T> generic base class in Utilities
     - Implement Extensions.cs with common C# extension methods
     - _Requirements: 3.5_
   
-  - [ ] 3.2 Implement GameManager singleton
+  - [x] 3.2 Implement GameManager singleton
     - Create GameManager.cs in Scripts/Core
     - Implement singleton pattern with DontDestroyOnLoad
     - Add game state management (enum: MainMenu, Playing, Paused)
     - Add scene management methods (LoadMainMenu, LoadWorkshop)
     - _Requirements: 3.1_
   
-  - [ ] 3.3 Implement machine framework interfaces and base classes
+  - [x] 3.3 Implement machine framework interfaces and base classes
     - Create IMachine.cs interface in Scripts/Machines
     - Create MachineBase.cs abstract class in Scripts/Machines
     - Create ExtractorBase.cs, ProcessorBase.cs, AssemblerBase.cs in Scripts/Machines
     - Implement MachineState enum and basic lifecycle methods (Initialize, Tick, Shutdown)
     - _Requirements: 3.2_
   
-  - [ ] 3.4 Implement ResourceManager
+  - [x] 3.4 Implement ResourceManager
     - Create ResourceManager.cs in Scripts/Core
     - Implement singleton pattern
     - Add resource tracking dictionary (resourceId → count)
     - Implement AddResources, TryConsumeResources, HasResource methods
     - _Requirements: 3.3_
   
-  - [ ] 3.5 Create ScriptableObject data classes
+  - [x] 3.5 Create ScriptableObject data classes
     - Create ResourceData.cs in Scripts/Data with [CreateAssetMenu]
     - Create RecipeData.cs in Scripts/Data with [CreateAssetMenu]
     - Create MachineData.cs in Scripts/Data with [CreateAssetMenu]
@@ -69,18 +69,18 @@
     - Implement ResourceStack struct and enums (MachineState, ResourceCategory, MachineCategory, ResearchBranch)
     - _Requirements: 3.4_
 
-- [ ] 4. Configure version control
-  - [ ] 4.1 Initialize Git repository
+- [-] 4. Configure version control
+  - [x] 4.1 Initialize Git repository
     - Run `git init` in project root
     - Create .gitignore with Unity-specific exclusions (Library/, Temp/, Logs/, UserSettings/, *.csproj, *.sln, Builds/)
     - _Requirements: 4.1, 4.3_
   
-  - [ ] 4.2 Configure Git LFS
+  - [x] 4.2 Configure Git LFS
     - Run `git lfs install`
     - Create .gitattributes with LFS tracking for .fbx, .blend, .png, .tga, .psd, .wav, .ogg, .mp3 files
     - _Requirements: 4.2_
   
-  - [ ] 4.3 Create initial commit
+  - [-] 4.3 Create initial commit
     - Stage all project files
     - Create initial commit with message "Initial project setup with URP and folder structure"
     - _Requirements: 4.5_

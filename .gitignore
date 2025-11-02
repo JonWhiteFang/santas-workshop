@@ -77,6 +77,7 @@ SantasWorkshopAutomation/.plastic/
 # Test builds (in root)
 TestBuild/
 build_test.log
+Builds/
 
 # OS files
 .DS_Store
