@@ -149,14 +149,14 @@
     - Add Builds/ to .gitignore
     - _Requirements: 7.5_
 
-- [ ] 8. Create unit tests for core systems
-  - [ ] 8.1 Set up Unity Test Framework
+- [x] 8. Create unit tests for core systems
+  - [x] 8.1 Set up Unity Test Framework
     - Create Tests folder in Assets/_Project
     - Add Unity Test Framework package if not present
     - Create assembly definition for tests
     - _Requirements: Testing Strategy_
   
-  - [ ] 8.2 Write ResourceManager tests
+  - [x] 8.2 Write ResourceManager tests
     - Create ResourceManagerTests.cs
     - Test AddResources increases count
     - Test TryConsumeResources with sufficient resources
@@ -164,7 +164,7 @@
     - Test HasResource returns correct values
     - _Requirements: Testing Strategy_
   
-  - [ ] 8.3 Write MachineBase tests
+  - [x] 8.3 Write MachineBase tests
     - Create MachineBaseTests.cs
     - Test Initialize sets correct state
     - Test Shutdown changes state to Offline

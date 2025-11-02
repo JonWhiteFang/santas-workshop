@@ -1,0 +1,16 @@
+{
+    "name": "SantasWorkshop.Machines",
+    "rootNamespace": "SantasWorkshop.Machines",
+    "references": [
+        "SantasWorkshop.Data"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
