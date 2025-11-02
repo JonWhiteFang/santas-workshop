@@ -71,9 +71,35 @@ SantasWorkshopAutomation/
 ### Prerequisites
 
 - **Unity Hub**: Latest version
-- **Unity 2022 LTS**: Install via Unity Hub
+- **Unity 2022 LTS**: Install via Unity Hub (2022.3.x or later recommended)
 - **Git**: For version control
 - **Git LFS**: For large binary assets
+
+### Required Unity Packages
+
+The following packages are required and should be installed via Unity Package Manager:
+
+- **Universal RP** (com.unity.render-pipelines.universal)
+- **Burst Compiler** (com.unity.burst)
+- **Collections** (com.unity.collections)
+- **Mathematics** (com.unity.mathematics)
+- **Input System** (com.unity.inputsystem)
+- **Cinemachine** (com.unity.cinemachine)
+- **TextMeshPro** (com.unity.textmeshpro)
+- **UI Toolkit** (built-in)
+
+These packages are automatically included in the project manifest and will be installed when you open the project.
+
+### Third-Party Assets
+
+Currently, no third-party assets are required for the project. All functionality is implemented using Unity's built-in systems and the packages listed above.
+
+**Optional Third-Party Assets** (for future consideration):
+- **DOTween**: Animation tweening library (not currently used)
+- **Odin Inspector**: Enhanced editor tools (not currently used)
+- **Addressables**: Asset management system (not currently used)
+
+If third-party assets are added in the future, they will be documented here with installation instructions.
 
 ### Installation
 
@@ -100,15 +126,56 @@ cd SantasWorkshopAutomation
 
 ### Building
 
-```powershell
-# Build from Unity Editor
-# File → Build Settings → Select Platform → Build
+#### Development Build (Windows)
 
-# Command-line build (Windows)
+```powershell
+# From Unity Editor:
+# 1. File → Build Settings
+# 2. Select "Windows, Mac, Linux" platform
+# 3. Check "Development Build"
+# 4. Check "Script Debugging"
+# 5. Check "Wait For Managed Debugger" (optional)
+# 6. Click "Build" and select output folder
+
+# Command-line development build:
 "C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
   -quit -batchmode -projectPath . `
-  -buildWindows64Player "Builds/SantasWorkshop.exe"
+  -buildWindows64Player "Builds/Dev/SantasWorkshop.exe" `
+  -development
 ```
+
+#### Release Build (Windows)
+
+```powershell
+# From Unity Editor:
+# 1. File → Build Settings
+# 2. Select "Windows, Mac, Linux" platform
+# 3. Uncheck "Development Build"
+# 4. Set Scripting Backend to "IL2CPP" (Player Settings)
+# 5. Set Code Stripping to "High" (Player Settings)
+# 6. Click "Build" and select output folder
+
+# Command-line release build:
+"C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
+  -quit -batchmode -projectPath . `
+  -buildWindows64Player "Builds/Release/SantasWorkshop.exe"
+```
+
+#### Build Configuration Notes
+
+**Development Build**:
+- Debug symbols enabled for debugging
+- Profiler connection enabled
+- Script debugging enabled
+- Faster iteration time
+- Larger build size
+
+**Release Build**:
+- IL2CPP scripting backend for better performance
+- High code stripping to reduce build size
+- Optimizations enabled
+- No debug symbols
+- Compressed assets
 
 ### Testing
 
