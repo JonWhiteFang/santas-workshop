@@ -171,7 +171,7 @@
     - Test power state changes
     - _Requirements: Testing Strategy_
 
-- [ ] 9. Verify and validate project setup
+- [x] 9. Verify and validate project setup
   - Open project in Unity Editor and verify no errors
   - Build project for Windows and verify successful build
   - Run through manual testing checklist from design document
