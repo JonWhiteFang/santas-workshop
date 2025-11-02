@@ -181,9 +181,10 @@ Builds/
 - **Bit Depth**: 16-bit
 
 ### Scripts
-- **Namespace**: `SantasWorkshop.<System>` (e.g., `SantasWorkshop.Machines`)
+- **Namespace**: `SantasWorkshop.<System>` (e.g., `SantasWorkshop.Machines`, `SantasWorkshop.Core`)
 - **Regions**: Use `#region` to organize large classes
 - **Comments**: XML documentation for public APIs
+- **File Organization**: One class per file, file name matches class name
 
 ## Version Control Exclusions
 
@@ -215,3 +216,26 @@ Builds/
 - Use Unity's search bar with `t:` prefix (e.g., `t:ScriptableObject` finds all SOs)
 - Search by component: `t:MonoBehaviour` finds all scripts
 - Search in folder: Right-click folder → "Find References In Scene"
+
+## Quick Reference
+
+### Namespace Structure
+```csharp
+SantasWorkshop.Core          // GameManager, ResourceManager, SaveLoadSystem
+SantasWorkshop.Machines      // All machine implementations
+SantasWorkshop.Logistics     // Conveyors, pipes, routing
+SantasWorkshop.Research      // Tech tree system
+SantasWorkshop.Missions      // Campaign and objectives
+SantasWorkshop.UI            // UI controllers
+SantasWorkshop.Data          // Data structures and ScriptableObjects
+SantasWorkshop.Utilities     // Helper classes and extensions
+```
+
+### Common File Patterns
+```
+MachineBase.cs               // Abstract base for all machines
+ExtractorBase.cs             // Base for resource extractors
+IronOre_Resource.asset       // ScriptableObject for iron ore
+BasicSmelter_Recipe.asset    // Recipe for basic smelter
+Workshop.unity               // Main gameplay scene
+```

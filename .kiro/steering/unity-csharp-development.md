@@ -1,14 +1,14 @@
-# Unity 6.2 and C# Development Guidelines
+# Unity 6 and C# Development Guidelines
 
 **Last Updated**: November 2, 2025  
-**Unity Version**: 6.2 (6000.2.10f1)  
+**Unity Version**: 6.0 (6000.2.10f1)  
 **C# Version**: C# 9.0+ (.NET Standard 2.1)
 
-This steering document provides comprehensive guidelines for developing Unity projects using C# and Unity 6.2. Follow these patterns and best practices to ensure consistent, performant, and maintainable code.
+This steering document provides comprehensive guidelines for developing Unity projects using C# and Unity 6. Follow these patterns and best practices to ensure consistent, performant, and maintainable code.
 
 ---
 
-## Unity 6.2 Fundamentals
+## Unity 6 Fundamentals
 
 ### MonoBehaviour Lifecycle
 
@@ -81,7 +81,7 @@ public class ExampleBehaviour : MonoBehaviour
 
 ### Modern C# Features (C# 9.0+)
 
-Unity 6.2 supports modern C# features. Use them appropriately:
+Unity 6 supports modern C# features. Use them appropriately:
 
 ```csharp
 // Null-coalescing assignment (C# 8.0)
@@ -570,7 +570,7 @@ public class ObjectPool : MonoBehaviour
 
 ## Input System
 
-Unity 6.2 supports both old and new Input Systems. Prefer the new Input System:
+Unity 6 supports both old and new Input Systems. Prefer the new Input System:
 
 ```csharp
 using UnityEngine;
@@ -840,7 +840,7 @@ public class PlayerTests
 
 ## Summary
 
-This steering document covers the essential patterns and practices for Unity 6.2 development with C#. Key takeaways:
+This steering document covers the essential patterns and practices for Unity 6 development with C#. Key takeaways:
 
 1. **Lifecycle**: Understand MonoBehaviour lifecycle and use appropriate methods
 2. **Performance**: Cache references, avoid expensive operations in Update

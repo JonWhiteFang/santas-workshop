@@ -1,8 +1,9 @@
 # Santa's Workshop Automation - Product Overview
 
+**Last Updated**: November 2, 2025  
 **Genre**: Factory Automation / Management Simulation  
 **Platform**: PC (Steam)  
-**Engine**: Unity 2022+ LTS  
+**Engine**: Unity 6.0 (6000.2.10f1)  
 **Pricing**: Premium single purchase (£25–£35), no microtransactions
 
 ## Core Concept
@@ -32,3 +33,11 @@ Fans of Factorio, Satisfactory, and cozy management games. Players who enjoy opt
 - Player retention >25% at 30 days
 - Average session length 45–90 minutes
 - Christmas Spirit Score as primary engagement metric
+
+## Design Pillars
+
+1. **Optimization Without Stress**: Complex systems with forgiving mechanics
+2. **Festive Atmosphere**: Warm, cozy aesthetic with holiday charm
+3. **Meaningful Progression**: Unlocks that fundamentally change gameplay
+4. **Creative Expression**: Multiple valid solutions to production challenges
+5. **Seasonal Rhythm**: Natural pacing through the in-game year

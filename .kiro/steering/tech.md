@@ -4,10 +4,11 @@
 
 ## Engine & Platform
 
-- **Engine**: Unity 2022+ LTS (Long Term Support)
+- **Engine**: Unity 6.0 (6000.2.10f1)
 - **Render Pipeline**: Universal Render Pipeline (URP)
 - **Target Platform**: PC (Windows primary, Linux/Mac secondary)
 - **Distribution**: Steam
+- **C# Version**: C# 9.0+ (.NET Standard 2.1)
 
 ## Core Technologies
 
@@ -47,6 +48,18 @@
 6. **Mission System**: Campaign missions and sandbox challenges
 7. **Save/Load System**: Versioned schema for factory persistence
 
+## Current Project Status
+
+The project has been initialized with Unity 6.0 and basic structure. Key setup completed:
+
+- Unity 6.0 (6000.2.10f1) project created
+- Universal Render Pipeline (URP) configured
+- Basic folder structure established in Assets/
+- Git repository initialized with proper .gitignore
+- Project ready for core system implementation
+
+**Next Steps**: Implement core systems starting with Resource Manager and Machine Framework.
+
 ## Common Commands
 
 ### Project Setup
@@ -55,8 +68,8 @@
 git clone <repository-url>
 cd SantasWorkshopAutomation
 
-# Open in Unity Hub (Unity 2022 LTS required)
-# File → Open Project → Select project folder
+# Open in Unity Hub (Unity 6.0 required)
+# File → Open Project → Select SantasWorkshopAutomation folder
 ```
 
 ### Building
@@ -65,7 +78,7 @@ cd SantasWorkshopAutomation
 # File → Build Settings → Select Platform → Build
 
 # Command-line build (Windows)
-"C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
+"C:\Program Files\Unity\Hub\Editor\6000.2.10f1\Editor\Unity.exe" `
   -quit -batchmode -projectPath . `
   -buildWindows64Player "Builds/SantasWorkshop.exe"
 ```
@@ -76,7 +89,7 @@ cd SantasWorkshopAutomation
 # Window → General → Test Runner → Run All
 
 # Command-line tests
-"C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
+"C:\Program Files\Unity\Hub\Editor\6000.2.10f1\Editor\Unity.exe" `
   -runTests -batchmode -projectPath . `
   -testResults TestResults.xml
 ```
