@@ -69,7 +69,7 @@
     - Implement ResourceStack struct and enums (MachineState, ResourceCategory, MachineCategory, ResearchBranch)
     - _Requirements: 3.4_
 
-- [-] 4. Configure version control
+- [x] 4. Configure version control
   - [x] 4.1 Initialize Git repository
     - Run `git init` in project root
     - Create .gitignore with Unity-specific exclusions (Library/, Temp/, Logs/, UserSettings/, *.csproj, *.sln, Builds/)
@@ -80,26 +80,26 @@
     - Create .gitattributes with LFS tracking for .fbx, .blend, .png, .tga, .psd, .wav, .ogg, .mp3 files
     - _Requirements: 4.2_
   
-  - [-] 4.3 Create initial commit
+  - [x] 4.3 Create initial commit
     - Stage all project files
     - Create initial commit with message "Initial project setup with URP and folder structure"
     - _Requirements: 4.5_
 
-- [ ] 5. Create essential Unity scenes
-  - [ ] 5.1 Create MainMenu scene
+- [x] 5. Create essential Unity scenes
+  - [x] 5.1 Create MainMenu scene
     - Create Scenes/MainMenu.unity
     - Add basic UI Canvas with title text
     - Set as default scene in build settings
     - _Requirements: 5.1, 5.4_
   
-  - [ ] 5.2 Create Workshop scene
+  - [x] 5.2 Create Workshop scene
     - Create Scenes/Workshop.unity
     - Add Cinemachine Virtual Camera with basic isometric setup
     - Add directional light for basic lighting
     - Add Workshop scene to build settings
     - _Requirements: 5.2, 5.5_
   
-  - [ ] 5.3 Create TestScenes folder
+  - [x] 5.3 Create TestScenes folder
     - Create Scenes/TestScenes folder
     - Create TestScenes/TestScene_Empty.unity as template
     - _Requirements: 5.3_
