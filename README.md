@@ -126,56 +126,107 @@ cd SantasWorkshopAutomation
 
 ### Building
 
-#### Development Build (Windows)
+#### Quick Build (Using Unity Editor Menu)
 
+The project includes custom build scripts accessible from the Unity Editor menu:
+
+1. **Configure Platform**: `Santa's Workshop → Build → Configure Windows Platform`
+   - Sets Windows x86_64 as the target platform
+
+2. **Development Build**: `Santa's Workshop → Build → Build Development (Windows)`
+   - Automatically configures and builds a development version
+   - Output: `Builds/Dev/SantasWorkshop.exe`
+
+3. **Release Build**: `Santa's Workshop → Build → Build Release (Windows)`
+   - Automatically configures and builds an optimized release version
+   - Output: `Builds/Release/SantasWorkshop.exe`
+
+#### Manual Build Configuration
+
+##### Development Build Settings
+
+To manually configure development build settings:
+
+1. **From Unity Editor Menu**: `Santa's Workshop → Build → Configure Development Settings`
+
+2. **Manual Configuration**:
+   - File → Build Settings → Select "Windows, Mac, Linux" platform
+   - Check "Development Build"
+   - Check "Script Debugging"
+   - Check "Profiler Connection"
+   - Edit → Project Settings → Player → Other Settings:
+     - Scripting Backend: **Mono**
+     - Managed Stripping Level: **Disabled**
+
+3. **Command-line development build**:
 ```powershell
-# From Unity Editor:
-# 1. File → Build Settings
-# 2. Select "Windows, Mac, Linux" platform
-# 3. Check "Development Build"
-# 4. Check "Script Debugging"
-# 5. Check "Wait For Managed Debugger" (optional)
-# 6. Click "Build" and select output folder
-
-# Command-line development build:
 "C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
   -quit -batchmode -projectPath . `
   -buildWindows64Player "Builds/Dev/SantasWorkshop.exe" `
   -development
 ```
 
-#### Release Build (Windows)
+**Development Build Configuration**:
+- ✅ Development Build: **Enabled**
+- ✅ Script Debugging: **Enabled**
+- ✅ Profiler Connection: **Enabled**
+- ✅ Scripting Backend: **Mono** (faster iteration)
+- ✅ Code Stripping: **Disabled** (full debugging)
+- 📦 Build Size: Larger (~500MB-1GB)
+- ⚡ Performance: Moderate (not optimized)
+- 🐛 Debugging: Full support with symbols
 
+##### Release Build Settings
+
+To manually configure release build settings:
+
+1. **From Unity Editor Menu**: `Santa's Workshop → Build → Configure Release Settings`
+
+2. **Manual Configuration**:
+   - File → Build Settings → Select "Windows, Mac, Linux" platform
+   - Uncheck "Development Build"
+   - Uncheck "Script Debugging"
+   - Uncheck "Profiler Connection"
+   - Edit → Project Settings → Player → Other Settings:
+     - Scripting Backend: **IL2CPP**
+     - Managed Stripping Level: **High**
+     - IL2CPP Code Generation: **Release**
+
+3. **Command-line release build**:
 ```powershell
-# From Unity Editor:
-# 1. File → Build Settings
-# 2. Select "Windows, Mac, Linux" platform
-# 3. Uncheck "Development Build"
-# 4. Set Scripting Backend to "IL2CPP" (Player Settings)
-# 5. Set Code Stripping to "High" (Player Settings)
-# 6. Click "Build" and select output folder
-
-# Command-line release build:
 "C:\Program Files\Unity\Hub\Editor\2022.x.xxf1\Editor\Unity.exe" `
   -quit -batchmode -projectPath . `
   -buildWindows64Player "Builds/Release/SantasWorkshop.exe"
 ```
 
-#### Build Configuration Notes
+**Release Build Configuration**:
+- ❌ Development Build: **Disabled**
+- ❌ Script Debugging: **Disabled**
+- ❌ Profiler Connection: **Disabled**
+- ✅ Scripting Backend: **IL2CPP** (better performance)
+- ✅ Code Stripping: **High** (smaller build size)
+- ✅ IL2CPP Configuration: **Release** (optimized)
+- 📦 Build Size: Smaller (~200-400MB)
+- ⚡ Performance: Optimized for production
+- 🐛 Debugging: Limited (no symbols)
 
-**Development Build**:
-- Debug symbols enabled for debugging
-- Profiler connection enabled
-- Script debugging enabled
-- Faster iteration time
-- Larger build size
+#### Build Output Structure
 
-**Release Build**:
-- IL2CPP scripting backend for better performance
-- High code stripping to reduce build size
-- Optimizations enabled
-- No debug symbols
-- Compressed assets
+```
+Builds/
+├── Dev/                         # Development builds
+│   ├── SantasWorkshop.exe
+│   ├── SantasWorkshop_Data/
+│   ├── MonoBleedingEdge/        # Mono runtime
+│   └── UnityPlayer.dll
+└── Release/                     # Release builds
+    ├── SantasWorkshop.exe
+    ├── SantasWorkshop_Data/
+    ├── GameAssembly.dll         # IL2CPP compiled code
+    └── UnityPlayer.dll
+```
+
+**Note**: The `Builds/` directory is excluded from version control (.gitignore).
 
 ### Testing
 

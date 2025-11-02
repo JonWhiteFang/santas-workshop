@@ -104,47 +104,47 @@
     - Create TestScenes/TestScene_Empty.unity as template
     - _Requirements: 5.3_
 
-- [ ] 6. Create project documentation
-  - [ ] 6.1 Create README.md
+- [x] 6. Create project documentation
+  - [x] 6.1 Create README.md
     - Write project description and overview
     - Document setup instructions (Unity version, package requirements)
     - Add build commands for Windows
     - Document folder structure and purpose
     - _Requirements: 6.1, 6.5_
   
-  - [ ] 6.2 Create CONTRIBUTING.md
+  - [x] 6.2 Create CONTRIBUTING.md
     - Document naming conventions (PascalCase for classes, _camelCase for private fields)
     - Describe three-layer architecture (Render, Simulation, UI)
     - List coding standards and best practices
     - _Requirements: 6.2, 6.3_
   
-  - [ ] 6.3 Document dependencies
+  - [x] 6.3 Document dependencies
     - List required Unity packages in README.md
     - Document third-party assets (if any)
     - _Requirements: 6.4_
 
-- [ ] 7. Configure build settings
-  - [ ] 7.1 Set up Windows build target
+- [x] 7. Configure build settings
+  - [x] 7.1 Set up Windows build target
     - Open Build Settings (File → Build Settings)
     - Select Windows as platform
     - Set architecture to x86_64
     - _Requirements: 7.1_
   
-  - [ ] 7.2 Configure Development build settings
+  - [x] 7.2 Configure Development build settings
     - Enable Development Build option
     - Enable Script Debugging
     - Enable Profiler connection
     - Document settings in README.md
     - _Requirements: 7.3_
   
-  - [ ] 7.3 Configure Release build settings
+  - [x] 7.3 Configure Release build settings
     - Set Scripting Backend to IL2CPP
     - Set Code Stripping to High
     - Disable Development Build options
     - Document settings in README.md
     - _Requirements: 7.4_
   
-  - [ ] 7.4 Set up Builds output directory
+  - [x] 7.4 Set up Builds output directory
     - Create Builds/ folder in project root
     - Add Builds/ to .gitignore
     - _Requirements: 7.5_
