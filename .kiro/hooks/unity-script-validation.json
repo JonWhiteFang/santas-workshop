@@ -1,0 +1,12 @@
+{
+  "name": "Unity Script Validation",
+  "description": "Validates Unity C# scripts for common pitfalls and performance issues",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "**/*.cs",
+    "excludePattern": "**/Library/**"
+  },
+  "enabled": true,
+  "prompt": "Analyze the saved C# script for Unity-specific issues:\n\n1. **Performance Issues**:\n   - Check for GetComponent(), GameObject.Find(), Camera.main, or FindObjectOfType() calls in Update(), FixedUpdate(), or LateUpdate() methods\n   - Flag LINQ usage (Where, Select, ToList, etc.) in Update loops\n   - Identify string concatenation in frequently called methods\n\n2. **Serialization Issues**:\n   - Find private fields that likely should have [SerializeField] attribute (fields like 'speed', 'health', 'prefab', etc.)\n   - Warn about public fields that might need [HideInInspector]\n\n3. **Lifecycle Issues**:\n   - Check for physics operations (Rigidbody, AddForce, velocity) in Update() instead of FixedUpdate()\n   - Verify Awake() is used for internal initialization, Start() for external dependencies\n\n4. **Null Safety**:\n   - Flag component access without null checks in critical paths\n   - Identify missing null-conditional operators where appropriate\n\n5. **Naming Conventions**:\n   - Verify private fields use _camelCase with underscore prefix\n   - Check that class name matches file name\n\nProvide a concise summary of issues found. If no issues, respond with 'No Unity-specific issues detected.' Keep feedback actionable and specific to line numbers when possible.\n\nFile: {{filePath}}\n\n```csharp\n{{fileContent}}\n```",
+  "autoApprove": false
+}

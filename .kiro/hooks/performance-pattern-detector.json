@@ -1,0 +1,12 @@
+{
+  "name": "Performance Pattern Detector",
+  "description": "Detects performance anti-patterns in critical game systems",
+  "trigger": {
+    "type": "onSave",
+    "filePattern": "**/Scripts/{Core,Machines,Logistics}/**/*.cs",
+    "excludePattern": "**/Library/**"
+  },
+  "enabled": true,
+  "prompt": "Analyze this critical system script for performance anti-patterns:\n\n1. **Hot Path Issues**:\n   - LINQ operations in Update/FixedUpdate/LateUpdate\n   - Expensive operations in frequently called methods (>60 times/sec)\n   - Repeated GetComponent() calls that should be cached\n   - GameObject.Find*() methods anywhere\n   - Camera.main property access in loops\n\n2. **Memory Allocation**:\n   - String concatenation using + operator in loops\n   - new keyword in Update methods (except for structs)\n   - Boxing/unboxing operations\n   - ToList(), ToArray() calls on collections\n\n3. **Job System & Burst**:\n   - Job structs missing [BurstCompile] attribute\n   - Managed references in Job structs (not allowed)\n   - Missing [ReadOnly] on NativeArray parameters\n\n4. **Collection Usage**:\n   - List.Remove() in loops (use RemoveAt with reverse iteration)\n   - Dictionary lookups without TryGetValue\n   - Unnecessary collection copies\n\n5. **Unity-Specific**:\n   - CompareTag() not used (string comparison instead)\n   - Vector3.Distance in tight loops (use sqrMagnitude)\n   - Quaternion.Euler in Update (cache rotations)\n\nFor this factory automation game targeting 1000+ active machines at 60 FPS, performance is critical. Provide specific, actionable feedback with severity levels (Critical/Warning/Info).\n\nFile: {{filePath}}\n\n```csharp\n{{fileContent}}\n```",
+  "autoApprove": false
+}
