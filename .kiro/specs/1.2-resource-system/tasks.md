@@ -20,7 +20,10 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Place in SantasWorkshop.Data namespace
   - _Requirements: 1.1, 1.2, 1.3_
 
-- [ ] 2. Create ResourceData ScriptableObject
+- [x] 2. Create ResourceData ScriptableObject
+
+
+
   - Create ResourceData class inheriting from ScriptableObject
   - Add all required fields: resourceId, displayName, description, icon, category, stackSize, weight, itemPrefab, itemColor, baseValue, canBeStored, canBeTransported
   - Add [CreateAssetMenu] attribute with path "Santa/Resource Data"

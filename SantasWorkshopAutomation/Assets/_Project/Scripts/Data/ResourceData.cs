@@ -6,7 +6,7 @@ namespace SantasWorkshop.Data
     /// ScriptableObject that defines a resource type in the game.
     /// Resources can be raw materials, refined goods, components, toys, or magical items.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Resource", menuName = "Santa's Workshop/Resource", order = 1)]
+    [CreateAssetMenu(fileName = "NewResource", menuName = "Santa/Resource Data", order = 1)]
     public class ResourceData : ScriptableObject
     {
         [Header("Basic Info")]
@@ -28,25 +28,47 @@ namespace SantasWorkshop.Data
         public ResourceCategory category = ResourceCategory.RawMaterial;
 
         [Tooltip("Maximum stack size for this resource")]
-        [Range(1, 1000)]
+        [Range(1, 10000)]
         public int stackSize = 100;
 
+        [Tooltip("Weight for logistics calculations (in kg)")]
+        [Range(0.1f, 100f)]
+        public float weight = 1f;
+
         [Tooltip("Base value of this resource (for trading/scoring)")]
-        public int baseValue = 1;
+        public int baseValue = 10;
 
         [Header("Visual")]
-        [Tooltip("Color tint for this resource in the UI")]
-        public Color resourceColor = Color.white;
+        [Tooltip("3D model for items on conveyors")]
+        public GameObject itemPrefab;
+
+        [Tooltip("Color tint for the item")]
+        public Color itemColor = Color.white;
+
+        [Header("Behavior")]
+        [Tooltip("Can this resource be stored in containers?")]
+        public bool canBeStored = true;
+
+        [Tooltip("Can this resource be transported on conveyors?")]
+        public bool canBeTransported = true;
 
         /// <summary>
-        /// Validates the resource data on enable.
+        /// Validates the resource data in the editor.
+        /// Ensures resourceId is not empty and stackSize is greater than 0.
         /// </summary>
         private void OnValidate()
         {
-            // Auto-generate resourceId from asset name if empty
-            if (string.IsNullOrEmpty(resourceId))
+            // Validate resourceId is not empty
+            if (string.IsNullOrWhiteSpace(resourceId))
             {
-                resourceId = name.ToLower().Replace(" ", "_");
+                Debug.LogWarning($"ResourceData {name} has empty resourceId!");
+            }
+
+            // Validate stackSize is greater than 0
+            if (stackSize <= 0)
+            {
+                Debug.LogWarning($"ResourceData {name} has invalid stackSize! Setting to 1.");
+                stackSize = 1;
             }
 
             // Ensure display name is set
