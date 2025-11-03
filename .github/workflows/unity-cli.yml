@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  UNITY_VERSION: 6000.0.23f1
-  UNITY_VERSION_CHANGESET: 0c8aa4a77886
+  UNITY_VERSION: 6000.2.10f1
+  UNITY_VERSION_CHANGESET: d3d30d158480
 
 jobs:
   test:
