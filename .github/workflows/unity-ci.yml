@@ -15,8 +15,6 @@ jobs:
   test:
     name: Run Unity Tests
     runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
     
     steps:
       # Checkout repository
@@ -84,8 +82,6 @@ jobs:
   build-windows:
     name: Build for Windows
     runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
@@ -135,8 +131,6 @@ jobs:
   build-linux:
     name: Build for Linux
     runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
