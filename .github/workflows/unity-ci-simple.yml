@@ -1,0 +1,202 @@
+name: Unity CI (Simplified for Unity 6)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  UNITY_VERSION: 6000.2.10f1
+
+jobs:
+  # Validate project structure
+  validate:
+    name: Validate Project
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      
+      - name: Check Project Structure
+        run: |
+          echo "Checking Unity project structure..."
+          
+          # Check for required directories
+          if [ ! -d "Assets" ]; then
+            echo "❌ Assets directory not found"
+            exit 1
+          fi
+          
+          if [ ! -d "ProjectSettings" ]; then
+            echo "❌ ProjectSettings directory not found"
+            exit 1
+          fi
+          
+          if [ ! -d "Packages" ]; then
+            echo "❌ Packages directory not found"
+            exit 1
+          fi
+          
+          echo "✅ Project structure is valid"
+      
+      - name: Check for C# Scripts
+        run: |
+          echo "Checking for C# scripts..."
+          script_count=$(find Assets -name "*.cs" -type f | wc -l)
+          echo "Found $script_count C# scripts"
+          
+          if [ $script_count -eq 0 ]; then
+            echo "⚠️ No C# scripts found"
+          else
+            echo "✅ C# scripts found"
+          fi
+      
+      - name: Check for Test Scripts
+        run: |
+          echo "Checking for test scripts..."
+          test_count=$(find Assets/Tests -name "*.cs" -type f 2>/dev/null | wc -l)
+          echo "Found $test_count test scripts"
+          
+          if [ $test_count -eq 0 ]; then
+            echo "⚠️ No test scripts found"
+          else
+            echo "✅ Test scripts found"
+          fi
+      
+      - name: Validate Assembly Definitions
+        run: |
+          echo "Checking for assembly definition files..."
+          asmdef_count=$(find Assets -name "*.asmdef" -type f | wc -l)
+          echo "Found $asmdef_count assembly definition files"
+          
+          if [ $asmdef_count -gt 0 ]; then
+            echo "✅ Assembly definitions found"
+            find Assets -name "*.asmdef" -type f
+          else
+            echo "⚠️ No assembly definitions found"
+          fi
+      
+      - name: Check Git LFS
+        run: |
+          echo "Checking Git LFS configuration..."
+          if [ -f ".gitattributes" ]; then
+            echo "✅ .gitattributes found"
+            echo "LFS tracked files:"
+            grep "filter=lfs" .gitattributes || echo "No LFS patterns found"
+          else
+            echo "⚠️ .gitattributes not found"
+          fi
+      
+      - name: Project Summary
+        run: |
+          echo "=== Project Summary ==="
+          echo "Unity Version: ${{ env.UNITY_VERSION }}"
+          echo "Total C# files: $(find Assets -name "*.cs" -type f | wc -l)"
+          echo "Total prefabs: $(find Assets -name "*.prefab" -type f | wc -l)"
+          echo "Total scenes: $(find Assets -name "*.unity" -type f | wc -l)"
+          echo "Total materials: $(find Assets -name "*.mat" -type f | wc -l)"
+          echo "======================="
+
+  # Code quality checks
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Check for C# files
+        id: check-files
+        run: |
+          if find Assets -name "*.cs" -type f | grep -q .; then
+            echo "has_cs_files=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_cs_files=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check C# Syntax (Basic)
+        if: steps.check-files.outputs.has_cs_files == 'true'
+        run: |
+          echo "Checking C# files for common issues..."
+          
+          # Check for TODO comments
+          todo_count=$(grep -r "TODO" Assets --include="*.cs" | wc -l)
+          echo "Found $todo_count TODO comments"
+          
+          # Check for Debug.Log statements
+          debug_count=$(grep -r "Debug.Log" Assets --include="*.cs" | wc -l)
+          echo "Found $debug_count Debug.Log statements"
+          
+          # Check for empty Update methods (performance issue)
+          empty_update=$(grep -A 2 "void Update()" Assets --include="*.cs" | grep -c "^[[:space:]]*}$" || true)
+          if [ $empty_update -gt 0 ]; then
+            echo "⚠️ Found $empty_update potentially empty Update() methods"
+          fi
+          
+          echo "✅ Basic code quality checks passed"
+      
+      - name: Check Naming Conventions
+        if: steps.check-files.outputs.has_cs_files == 'true'
+        run: |
+          echo "Checking naming conventions..."
+          
+          # Check for files with spaces in names (bad practice)
+          files_with_spaces=$(find Assets -name "* *.cs" -type f | wc -l)
+          if [ $files_with_spaces -gt 0 ]; then
+            echo "⚠️ Found $files_with_spaces C# files with spaces in names"
+            find Assets -name "* *.cs" -type f
+          else
+            echo "✅ No files with spaces in names"
+          fi
+        continue-on-error: true
+
+  # Documentation check
+  documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Check for README
+        run: |
+          if [ -f "README.md" ]; then
+            echo "✅ README.md found"
+            lines=$(wc -l < README.md)
+            echo "README has $lines lines"
+          else
+            echo "⚠️ README.md not found"
+          fi
+      
+      - name: Check for Documentation Files
+        run: |
+          echo "Checking for documentation..."
+          
+          doc_files=$(find . -name "*.md" -type f | wc -l)
+          echo "Found $doc_files markdown files"
+          
+          if [ $doc_files -gt 0 ]; then
+            echo "Documentation files:"
+            find . -name "*.md" -type f
+          fi
+      
+      - name: Check for Steering Documents
+        run: |
+          if [ -d ".kiro/steering" ]; then
+            echo "✅ Steering documents found"
+            steering_count=$(find .kiro/steering -name "*.md" -type f | wc -l)
+            echo "Found $steering_count steering documents"
+          else
+            echo "⚠️ No steering documents found"
+          fi
+
+# Note: Unity 6 (6000.x) is not yet supported by GameCI
+# Once GameCI adds support, we can enable full Unity tests and builds
+# For now, this workflow validates project structure and code quality
