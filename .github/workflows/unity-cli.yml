@@ -38,36 +38,31 @@ jobs:
             Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
             Library-${{ runner.os }}-
       
-      - name: Install Unity Hub
-        if: steps.cache-unity.outputs.cache-hit != 'true'
-        run: |
-          echo "Installing Unity Hub..."
-          wget -q https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.AppImage
-          chmod +x UnityHubSetup.AppImage
-          ./UnityHubSetup.AppImage --appimage-extract
-          sudo mv squashfs-root /opt/unityhub
-          sudo ln -s /opt/unityhub/AppRun /usr/bin/unity-hub
-      
       - name: Install Unity Editor
         if: steps.cache-unity.outputs.cache-hit != 'true'
         run: |
           echo "Installing Unity ${{ env.UNITY_VERSION }}..."
           
-          # Install Unity Editor via Hub
-          unity-hub install --version ${{ env.UNITY_VERSION }} --changeset ${{ env.UNITY_VERSION_CHANGESET }} || true
-          
-          # Alternative: Direct download if Hub fails
+          # Direct download Unity Editor
           UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/${{ env.UNITY_VERSION_CHANGESET }}/LinuxEditorInstaller/Unity.tar.xz"
           
           echo "Downloading Unity from: $UNITY_DOWNLOAD_URL"
-          wget -q -O Unity.tar.xz "$UNITY_DOWNLOAD_URL"
+          wget -O Unity.tar.xz "$UNITY_DOWNLOAD_URL"
           
           echo "Extracting Unity..."
           mkdir -p ~/Unity/Editor
-          tar -xf Unity.tar.xz -C ~/Unity/Editor
+          tar -xf Unity.tar.xz -C ~/Unity/Editor --strip-components=1
           
           echo "Unity installed to: ~/Unity/Editor"
           ls -la ~/Unity/Editor
+          
+          # Verify Unity executable exists
+          if [ -f "~/Unity/Editor/Unity" ]; then
+            echo "✅ Unity executable found"
+          else
+            echo "❌ Unity executable not found, searching..."
+            find ~/Unity -name "Unity" -type f
+          fi
       
       - name: Activate Unity License
         env:
@@ -218,9 +213,9 @@ jobs:
           
           UNITY_DOWNLOAD_URL="https://download.unity3d.com/download_unity/${{ env.UNITY_VERSION_CHANGESET }}/LinuxEditorInstaller/Unity.tar.xz"
           
-          wget -q -O Unity.tar.xz "$UNITY_DOWNLOAD_URL"
+          wget -O Unity.tar.xz "$UNITY_DOWNLOAD_URL"
           mkdir -p ~/Unity/Editor
-          tar -xf Unity.tar.xz -C ~/Unity/Editor
+          tar -xf Unity.tar.xz -C ~/Unity/Editor --strip-components=1
       
       - name: Activate Unity License
         env:
