@@ -7,214 +7,41 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
-env:
-  UNITY_VERSION: 6000.2.10f1
-
 jobs:
-  # Run Unity tests
-  test:
-    name: Run Unity Tests
+  tests:
     runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
-    
+    timeout-minutes: 60
+
     steps:
-      # Checkout repository
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      
-      # Cache Library folder for faster builds
-      - name: Cache Unity Library
+      - uses: actions/checkout@v4
+
+      # Speed up imports between runs
+      - name: Cache Unity Library + PackMan
         uses: actions/cache@v4
         with:
-          path: Library
-          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: |
+            Library
+            ~/.cache/unity3d
+            ~/.local/share/unity3d
+          key: ${{ runner.os }}-unitylib-${{ hashFiles('**/Packages/manifest.json') }}
           restore-keys: |
-            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
-            Library-${{ runner.os }}-
-      
-      # Activate Unity license
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v2
+            ${{ runner.os }}-unitylib-
+
+      - name: Unity - Test Runner (EditMode + PlayMode)
+        uses: game-ci/unity-test-runner@v4
+        with:
+          # Let the action read your exact editor from ProjectSettings/ProjectVersion.txt
+          unityVersion: auto
+          testMode: All              # EditMode | PlayMode | All
+          artifactsPath: test-results
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
         env:
+          # Put your base64-encoded .ulf in the repo secrets as UNITY_LICENSE
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-      
-      # Run EditMode tests
-      - name: Run EditMode Tests
-        uses: game-ci/unity-test-runner@v4
-        id: editmode-tests
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-          test-mode: EditMode
-          artifacts-path: test-results/editmode
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: EditMode Test Results
-      
-      # Run PlayMode tests
-      - name: Run PlayMode Tests
-        uses: game-ci/unity-test-runner@v4
-        id: playmode-tests
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-          test-mode: PlayMode
-          artifacts-path: test-results/playmode
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: PlayMode Test Results
-      
-      # Upload test results
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
+
+      - name: Upload test results
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: Test Results
+          name: unity-test-results
           path: test-results
-      
-      # Return Unity license
-      - name: Return Unity License
-        uses: game-ci/unity-return-license@v2
-        if: always()
-
-  # Build for Windows
-  build-windows:
-    name: Build for Windows
-    runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      
-      - name: Cache Unity Library
-        uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
-            Library-${{ runner.os }}-
-      
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-      
-      - name: Build Windows
-        uses: game-ci/unity-builder@v4
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-          target-platform: StandaloneWindows64
-          build-name: SantasWorkshop
-          builds-path: Builds
-      
-      - name: Upload Windows Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: Build-Windows
-          path: Builds/StandaloneWindows64
-      
-      - name: Return Unity License
-        uses: game-ci/unity-return-license@v2
-        if: always()
-
-  # Build for Linux (optional)
-  build-linux:
-    name: Build for Linux
-    runs-on: ubuntu-latest
-    container:
-      image: unityci/editor:ubuntu-6000.2.10f1-linux-il2cpp-1
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      
-      - name: Cache Unity Library
-        uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-${{ runner.os }}-${{ env.UNITY_VERSION }}-
-            Library-${{ runner.os }}-
-      
-      - name: Activate Unity License
-        uses: game-ci/unity-activate@v2
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-      
-      - name: Build Linux
-        uses: game-ci/unity-builder@v4
-        with:
-          unity-version: ${{ env.UNITY_VERSION }}
-          target-platform: StandaloneLinux64
-          build-name: SantasWorkshop
-          builds-path: Builds
-      
-      - name: Upload Linux Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: Build-Linux
-          path: Builds/StandaloneLinux64
-      
-      - name: Return Unity License
-        uses: game-ci/unity-return-license@v2
-        if: always()
-
-  # Code quality checks
-  code-quality:
-    name: Code Quality
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      
-      - name: Check for C# files
-        id: check-files
-        run: |
-          if find Assets -name "*.cs" -type f | grep -q .; then
-            echo "has_cs_files=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_cs_files=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Setup .NET
-        if: steps.check-files.outputs.has_cs_files == 'true'
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '9.0.x'
-      
-      - name: Generate Unity Solution
-        if: steps.check-files.outputs.has_cs_files == 'true'
-        run: |
-          echo "Unity solution generation would happen here"
-          echo "Skipping for now - requires Unity Editor"
-      
-      - name: Code Quality Check
-        if: steps.check-files.outputs.has_cs_files == 'true'
-        run: |
-          echo "Code quality checks passed"
-          echo "Future: Add custom C# linting here"
-        continue-on-error: true
