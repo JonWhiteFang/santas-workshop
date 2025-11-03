@@ -9,7 +9,6 @@ on:
 
 env:
   UNITY_VERSION: 6000.2.10f1
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
 jobs:
   # Run Unity tests
@@ -37,9 +36,12 @@ jobs:
       # Activate Unity license
       - name: Activate Unity License
         uses: game-ci/unity-activate@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unity-version: ${{ env.UNITY_VERSION }}
-          unity-license: ${{ secrets.UNITY_LICENSE }}
       
       # Run EditMode tests
       - name: Run EditMode Tests
@@ -100,9 +102,12 @@ jobs:
       
       - name: Activate Unity License
         uses: game-ci/unity-activate@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unity-version: ${{ env.UNITY_VERSION }}
-          unity-license: ${{ secrets.UNITY_LICENSE }}
       
       - name: Build Windows
         uses: game-ci/unity-builder@v4
@@ -146,9 +151,12 @@ jobs:
       
       - name: Activate Unity License
         uses: game-ci/unity-activate@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           unity-version: ${{ env.UNITY_VERSION }}
-          unity-license: ${{ secrets.UNITY_LICENSE }}
       
       - name: Build Linux
         uses: game-ci/unity-builder@v4
