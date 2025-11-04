@@ -302,7 +302,73 @@ namespace SantasWorkshop.Core
 
         #endregion
 
+        #region Transfer Resources
+
+        /// <summary>
+        /// Transfers a specified amount of a resource between storage locations.
+        /// For initial implementation, operates on global inventory (sourceId/targetId reserved for future use).
+        /// </summary>
+        /// <param name="sourceId">The source storage identifier (reserved for future use)</param>
+        /// <param name="targetId">The target storage identifier (reserved for future use)</param>
+        /// <param name="resourceId">The unique identifier of the resource to transfer</param>
+        /// <param name="amount">The amount to transfer</param>
+        /// <returns>True if the transfer was successful, false otherwise</returns>
+        public bool TransferResource(string sourceId, string targetId, string resourceId, int amount)
+        {
+            // For initial implementation, operate on global inventory
+            // Future: Support named storage locations using sourceId/targetId
+
+            // Validate resource availability
+            if (!HasResource(resourceId, amount))
+            {
+                return false;
+            }
+
+            // Attempt to consume from source (global inventory)
+            if (!TryConsumeResource(resourceId, amount))
+            {
+                return false;
+            }
+
+            // Add to target (global inventory)
+            AddResource(resourceId, amount);
+
+            return true;
+        }
+
+        #endregion
+
         #region Query Resources
+
+        /// <summary>
+        /// Checks if a specified amount of a resource is available in the global inventory.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <param name="amount">The amount to check for</param>
+        /// <returns>True if the resource is available in the specified amount, false otherwise</returns>
+        public bool HasResource(string resourceId, int amount)
+        {
+            // Validate resourceId
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                return false;
+            }
+
+            // Validate amount is not negative
+            if (amount < 0)
+            {
+                return false;
+            }
+
+            // Check if resource exists in database
+            if (!_resourceDatabase.ContainsKey(resourceId))
+            {
+                return false;
+            }
+
+            // Check if sufficient resources available
+            return GetResourceCount(resourceId) >= amount;
+        }
 
         /// <summary>
         /// Gets the current count of a resource in the global inventory.
@@ -319,9 +385,75 @@ namespace SantasWorkshop.Core
             return _globalResourceCounts.TryGetValue(resourceId, out long count) ? count : 0;
         }
 
+        /// <summary>
+        /// Gets the ResourceData ScriptableObject for a specified resource.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <returns>The ResourceData object, or null if the resource doesn't exist</returns>
+        public ResourceData GetResourceData(string resourceId)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                return null;
+            }
+
+            return _resourceDatabase.TryGetValue(resourceId, out ResourceData data) ? data : null;
+        }
+
+        /// <summary>
+        /// Gets all registered resources in the system.
+        /// </summary>
+        /// <returns>Collection of all ResourceData objects</returns>
+        public IEnumerable<ResourceData> GetAllResources()
+        {
+            return _resourceDatabase.Values;
+        }
+
+        /// <summary>
+        /// Gets all resources of a specific category.
+        /// </summary>
+        /// <param name="category">The resource category to filter by</param>
+        /// <returns>Collection of ResourceData objects matching the category</returns>
+        public IEnumerable<ResourceData> GetResourcesByCategory(ResourceCategory category)
+        {
+            foreach (var resource in _resourceDatabase.Values)
+            {
+                if (resource.category == category)
+                {
+                    yield return resource;
+                }
+            }
+        }
+
         #endregion
 
         #region Capacity Management
+
+        /// <summary>
+        /// Sets the capacity limit for a resource.
+        /// A capacity of 0 means unlimited.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <param name="capacity">The capacity limit (0 for unlimited)</param>
+        public void SetResourceCapacity(string resourceId, long capacity)
+        {
+            // Validate resourceId
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                Debug.LogWarning("SetResourceCapacity called with empty resourceId!");
+                return;
+            }
+
+            // Check if resource exists in database
+            if (!_resourceDatabase.ContainsKey(resourceId))
+            {
+                Debug.LogWarning($"SetResourceCapacity: Unknown resourceId {resourceId}");
+                return;
+            }
+
+            // Set capacity
+            _resourceCapacities[resourceId] = capacity;
+        }
 
         /// <summary>
         /// Gets the capacity limit for a resource.
@@ -341,6 +473,61 @@ namespace SantasWorkshop.Core
         #endregion
 
         #region Validation
+
+        /// <summary>
+        /// Validates a single resource stack.
+        /// Checks if resourceId exists and amount is positive.
+        /// </summary>
+        /// <param name="stack">The resource stack to validate</param>
+        /// <returns>True if the stack is valid, false otherwise</returns>
+        public bool ValidateResourceStack(ResourceStack stack)
+        {
+            // Check resourceId is not empty
+            if (string.IsNullOrEmpty(stack.resourceId))
+            {
+                return false;
+            }
+
+            // Check amount is positive
+            if (stack.amount <= 0)
+            {
+                return false;
+            }
+
+            // Check resourceId exists in database
+            if (!_resourceDatabase.ContainsKey(stack.resourceId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Validates an array of resource stacks.
+        /// All stacks must be valid for this method to return true.
+        /// </summary>
+        /// <param name="stacks">The array of resource stacks to validate</param>
+        /// <returns>True if all stacks are valid, false otherwise</returns>
+        public bool ValidateResourceStacks(ResourceStack[] stacks)
+        {
+            // Check array is not null or empty
+            if (stacks == null || stacks.Length == 0)
+            {
+                return false;
+            }
+
+            // Validate each stack
+            foreach (var stack in stacks)
+            {
+                if (!ValidateResourceStack(stack))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Validates a resource operation (add/consume).

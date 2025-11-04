@@ -91,7 +91,9 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Return true only if all consumptions succeed
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 7. Implement resource query methods
+- [x] 7. Implement resource query methods
+
+
   - Create HasResource(string resourceId, int amount) method that checks if count >= amount
   - Return false for invalid resourceId or negative amount
   - Create GetResourceCount(string resourceId) method that returns current count from _globalResourceCounts
@@ -102,7 +104,9 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Create GetResourcesByCategory(ResourceCategory category) method using LINQ Where() filter
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 8. Implement resource validation methods
+- [x] 8. Implement resource validation methods
+
+
   - Create ValidateResourceStack(ResourceStack stack) method
   - Check resourceId is not null/empty, amount > 0, and resourceId exists in database
   - Return true only if all checks pass
@@ -115,7 +119,9 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Log warnings for validation failures
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 9. Implement capacity management methods
+- [x] 9. Implement capacity management methods
+
+
   - Create SetResourceCapacity(string resourceId, long capacity) method
   - Validate resourceId exists in database
   - Store capacity in _resourceCapacities dictionary
@@ -125,7 +131,10 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Return 0 for invalid resourceId
   - _Requirements: 14.1, 14.2, 14.4, 14.5_
 
-- [ ] 10. Implement resource transfer method
+- [x] 10. Implement resource transfer method
+
+
+
   - Create TransferResource(string sourceId, string targetId, string resourceId, int amount) method
   - For initial implementation, operate on global inventory (sourceId/targetId reserved for future use)
   - Validate resource availability using HasResource()
