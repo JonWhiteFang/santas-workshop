@@ -175,6 +175,88 @@ ResourceManager.Instance.OnResourceChanged += (resourceId, amount) =>
 
 ---
 
+#### Grid & Placement System ✅ (Completed: Nov 4, 2025)
+
+The Grid & Placement System provides a robust foundation for placing machines, buildings, and logistics components with snap-to-grid positioning and visual feedback.
+
+**Key Features**:
+- **Grid Management**: 100x100 cell grid with occupancy tracking
+- **Snap-to-Grid**: Automatic alignment to grid cells
+- **Visual Feedback**: Color-coded ghost preview (green=valid, red=invalid)
+- **Collision Detection**: Multi-cell validation for large buildings
+- **Rotation Support**: 90° rotation increments
+- **Input System Integration**: Modern Input System with legacy fallback
+- **Audio Feedback**: Success, error, and rotation sounds
+- **Event System**: Placement notifications for system integration
+
+**Core Components**:
+- **GridManager**: Grid cell management and coordinate conversion
+- **PlacementValidator**: Placement legality validation
+- **GhostPreview**: Visual feedback during placement
+- **PlacementController**: Orchestrates placement workflow
+
+**Usage Example**:
+```csharp
+// Enter placement mode
+PlacementController.Instance.EnterPlacementMode(machinePrefab);
+
+// Subscribe to placement events
+PlacementController.OnPlacementConfirmed += (gridPos, prefab) =>
+{
+    Debug.Log($"Placed at {gridPos}");
+};
+
+// Check cell availability
+if (GridManager.Instance.IsCellAvailable(gridPos))
+{
+    // Place machine
+}
+```
+
+**Documentation**:
+- [Grid & Placement System Summary](Documentation/Systems/GRID_PLACEMENT_SYSTEM_SUMMARY.md)
+- [Placement Integration Guide](SantasWorkshopAutomation/Assets/_Project/Scripts/Core/PLACEMENT_INTEGRATION.md)
+- [Grid & Placement Spec](.kiro/specs/1.3-grid-placement-system/)
+
+**Test Scene**: `Assets/_Project/Scenes/TestScenes/TestScene_GridPlacement.unity`
+
+---
+
+#### Machine Framework 🔄 (In Progress: 29% Complete)
+
+The Machine Framework provides the core architecture for all machines including extractors, processors, assemblers, and utility buildings.
+
+**Completed Components** (5/17 tasks):
+- ✅ **MachineState Enum**: 6 operational states (Idle, WaitingForInput, Processing, etc.)
+- ✅ **IPowerConsumer Interface**: Power grid integration contract
+- ✅ **ResourceStack Struct**: Lightweight resource quantity representation
+- ✅ **Recipe ScriptableObject**: Data-driven recipe system with validation
+- ✅ **MachineData ScriptableObject**: Complete machine configuration with port system
+
+**Key Features** (Implemented):
+- State machine architecture for machine behavior
+- Power consumption interface for grid integration
+- Recipe-based production system
+- Multi-input/multi-output support via port configuration
+- Tier-based machine progression
+- Upgrade paths and build costs
+
+**Pending Components** (12/17 tasks):
+- ⏳ InputPort and OutputPort classes
+- ⏳ MachineSaveData structures
+- ⏳ MachineBase abstract class
+- ⏳ ExtractorBase, ProcessorBase, AssemblerBase classes
+- ⏳ MachineFactory and MachineManager
+- ⏳ Sample assets and test scene
+
+**Documentation**:
+- [Machine Framework Progress](Documentation/Systems/MACHINE_FRAMEWORK_PROGRESS.md)
+- [Machine Framework Spec](.kiro/specs/1.4-machine-framework/)
+
+**Next Milestone**: Complete port system (InputPort, OutputPort)
+
+---
+
 ### Building
 
 #### Quick Build (Using the Unity Editor Menu)
@@ -337,8 +419,9 @@ This is a proprietary project. Contribution guidelines will be provided to team 
 ### Phase 1: Core Systems (Current)
 - ✅ Project setup and architecture
 - ✅ Resource management system (COMPLETE - Nov 4, 2025)
-- 🔄 Machine framework
-- 🔄 Power grid system
+- ✅ Grid & Placement system (COMPLETE - Nov 4, 2025)
+- 🔄 Machine framework (IN PROGRESS - 29% complete)
+- ⏳ Power grid system
 - ⏳ Basic logistics (conveyors)
 
 ### Phase 2: Gameplay Loop

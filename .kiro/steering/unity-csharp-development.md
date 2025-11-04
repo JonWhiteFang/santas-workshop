@@ -1,10 +1,18 @@
 # Unity 6 and C# Development Guidelines
 
-**Last Updated**: November 2, 2025  
+**Last Updated**: November 4, 2025  
 **Unity Version**: 6.0 (6000.2.10f1)  
 **C# Version**: C# 9.0+ (.NET Standard 2.1)
 
 This steering document provides comprehensive guidelines for developing Unity projects using C# and Unity 6. Follow these patterns and best practices to ensure consistent, performant, and maintainable code.
+
+## Related Documentation
+
+- **[Product Overview](product.md)** - Game concept, features, and design pillars
+- **[Technical Stack](tech.md)** - Technologies, architecture, and current implementation status
+- **[Project Structure](structure.md)** - Directory layout and file organization
+- **[Game Design Patterns](game-design-patterns.md)** - Architectural patterns and best practices
+- **[Data Architecture](data-architecture.md)** - ScriptableObject schemas and data structures
 
 ---
 

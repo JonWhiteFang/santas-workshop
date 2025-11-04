@@ -1,9 +1,36 @@
 # Game Design Patterns - Santa's Workshop Automation
 
-**Last Updated**: November 2, 2025  
+**Last Updated**: November 4, 2025  
 **Purpose**: Architectural patterns and best practices for factory automation systems
 
 This document defines the core design patterns used throughout Santa's Workshop Automation. These patterns ensure consistency, maintainability, and performance across all game systems.
+
+## Related Documentation
+
+- **[Product Overview](product.md)** - Game concept, features, and design pillars
+- **[Technical Stack](tech.md)** - Technologies, architecture, and current implementation status
+- **[Project Structure](structure.md)** - Directory layout and file organization
+- **[Data Architecture](data-architecture.md)** - ScriptableObject schemas and data structures
+- **[Unity Development Guidelines](unity-csharp-development.md)** - C# best practices for Unity 6
+
+## Implementation Status
+
+**Patterns Implemented** ✅:
+1. **Singleton Pattern** - Used in ResourceManager, GridManager, PlacementController
+2. **Observer Pattern** - Event system in ResourceManager and PlacementController
+3. **Object Pool** - Planned for items on conveyors
+4. **Grid System** - Fully implemented with snap-to-grid placement
+5. **ScriptableObject Data** - ResourceData, MachineData, RecipeData schemas defined
+
+**Patterns In Progress** 🔄:
+1. **State Machine** - MachineState enum defined, implementation pending
+2. **Factory Pattern** - MachineFactory planned, not yet implemented
+3. **Command Pattern** - Planned for undo/redo, not yet implemented
+
+**Patterns Pending** ⏳:
+1. **ECS Architecture** - Planned for high-performance simulation
+2. **Spatial Partitioning** - Planned for performance optimization
+3. **Save/Load System** - Schema defined, implementation pending
 
 ---
 

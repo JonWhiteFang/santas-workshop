@@ -1,9 +1,37 @@
 # Data Architecture - Santa's Workshop Automation
 
-**Last Updated**: November 2, 2025  
+**Last Updated**: November 4, 2025  
 **Purpose**: Data structures, ScriptableObject schemas, and serialization patterns
 
 This document defines the data architecture for Santa's Workshop Automation, including ScriptableObject schemas, save file formats, and data relationships between game systems.
+
+## Related Documentation
+
+- **[Product Overview](product.md)** - Game concept, features, and design pillars
+- **[Technical Stack](tech.md)** - Technologies, architecture, and current implementation status
+- **[Project Structure](structure.md)** - Directory layout and file organization
+- **[Game Design Patterns](game-design-patterns.md)** - Architectural patterns and best practices
+- **[Unity Development Guidelines](unity-csharp-development.md)** - C# best practices for Unity 6
+
+## Implementation Status
+
+**Implemented** ✅:
+- **ResourceData ScriptableObject** - Complete with 8 sample resources
+- **ResourceStack Struct** - Lightweight resource quantity representation
+- **RecipeData ScriptableObject** - Complete with validation
+- **MachineData ScriptableObject** - Complete with port configuration
+- **MachineEnums** - MachineType, MachineState, ResourceCategory enums
+- **ResearchData ScriptableObject** - Schema defined
+
+**In Progress** 🔄:
+- **MachineSaveData** - Structure defined, serialization pending
+- **InputPort/OutputPort** - Classes defined, implementation pending
+
+**Pending** ⏳:
+- **MissionData ScriptableObject** - Schema defined, not implemented
+- **ToyData ScriptableObject** - Schema defined, not implemented
+- **SaveData System** - Complete schema defined, implementation pending
+- **Database Organization** - Folder structure planned, assets pending
 
 ---
 

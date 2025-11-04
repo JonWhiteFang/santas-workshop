@@ -24,6 +24,8 @@ All project documentation is now organized in the **`Documentation/`** folder.
 ### Implemented Systems
 - [Resource System Completion Summary](Documentation/Systems/RESOURCE_SYSTEM_COMPLETION_SUMMARY.md) - Resource System implementation details
 - [Integration Test Report](Documentation/Systems/INTEGRATION_TEST_REPORT.md) - Resource System test results
+- [Grid & Placement System Summary](Documentation/Systems/GRID_PLACEMENT_SYSTEM_SUMMARY.md) - Grid & Placement System implementation details
+- [Machine Framework Progress](Documentation/Systems/MACHINE_FRAMEWORK_PROGRESS.md) - Machine Framework implementation progress (in progress)
 
 ### Understanding Fixes
 - [What Happened](Documentation/Fixes/WHAT_HAPPENED.md) - Simple explanation
@@ -39,7 +41,7 @@ Documentation/
 ├── Fixes/                       # Compilation fixes (4 files)
 ├── Guides/                      # Quick reference guides (2 files)
 ├── Reports/                     # Build reports (1 file)
-└── Systems/                     # Implemented system documentation (2 files)
+└── Systems/                     # Implemented system documentation (4 files)
 ```
 
 ---

@@ -1,10 +1,18 @@
 # Santa's Workshop Automation - Product Overview
 
-**Last Updated**: November 2, 2025  
+**Last Updated**: November 4, 2025  
 **Genre**: Factory Automation / Management Simulation  
 **Platform**: PC (Steam)  
 **Engine**: Unity 6.0 (6000.2.10f1)  
 **Pricing**: Premium single purchase (£25–£35), no microtransactions
+
+## Related Documentation
+
+- **[Technical Stack](tech.md)** - Technologies, architecture, and current implementation status
+- **[Project Structure](structure.md)** - Directory layout and file organization
+- **[Game Design Patterns](game-design-patterns.md)** - Architectural patterns and best practices
+- **[Data Architecture](data-architecture.md)** - ScriptableObject schemas and data structures
+- **[Unity Development Guidelines](unity-csharp-development.md)** - C# best practices for Unity 6
 
 ## Core Concept
 

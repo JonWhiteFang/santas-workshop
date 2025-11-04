@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Update Steering Documents",
+  "description": "Automatically updates all steering documents when any steering document or related project files are modified",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review and update all steering documents in .kiro/steering/ to ensure they are accurate, consistent, and reflect the current state of the project. Check for:\n1. Outdated information that needs updating\n2. New patterns or systems that should be documented\n3. Inconsistencies between steering documents\n4. Missing cross-references between related documents\n5. Alignment with the actual codebase and project structure\n\nUpdate any steering documents that need changes and ensure all documentation is synchronized."
+  }
+}

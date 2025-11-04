@@ -1,6 +1,14 @@
 # Santa's Workshop Automation - Technical Stack
 
-**Last Updated**: November 2, 2025
+**Last Updated**: November 4, 2025
+
+## Related Documentation
+
+- **[Product Overview](product.md)** - Game concept, features, and design pillars
+- **[Project Structure](structure.md)** - Directory layout and file organization
+- **[Game Design Patterns](game-design-patterns.md)** - Architectural patterns and best practices
+- **[Data Architecture](data-architecture.md)** - ScriptableObject schemas and data structures
+- **[Unity Development Guidelines](unity-csharp-development.md)** - C# best practices for Unity 6
 
 ## Engine & Platform
 
@@ -50,15 +58,22 @@
 
 ## Current Project Status
 
-The project has been initialized with Unity 6.0 and basic structure. Key setup completed:
+The project has been initialized with Unity 6.0 and core systems are being implemented. Key milestones:
 
+**Completed** ✅:
 - Unity 6.0 (6000.2.10f1) project created
 - Universal Render Pipeline (URP) configured
-- Basic folder structure established in Assets/
+- Complete folder structure established in Assets/
 - Git repository initialized with proper .gitignore
-- Project ready for core system implementation
+- **Resource Management System** (Nov 4, 2025) - 28/28 tests passing
+- **Grid & Placement System** (Nov 4, 2025) - Full implementation with visual feedback
+- Assembly definition structure for modular compilation
+- Custom build scripts for development and release builds
 
-**Next Steps**: Implement core systems starting with Resource Manager and Machine Framework.
+**In Progress** 🔄:
+- **Machine Framework** (29% complete) - Core interfaces and data structures implemented
+
+**Next Steps**: Complete Machine Framework (ports, base classes, factory), then implement Power Grid System.
 
 ## Common Commands
 

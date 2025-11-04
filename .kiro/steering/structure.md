@@ -1,6 +1,33 @@
 # Santa's Workshop Automation - Project Structure
 
-**Last Updated**: November 2, 2025
+**Last Updated**: November 4, 2025
+
+## Related Documentation
+
+- **[Product Overview](product.md)** - Game concept, features, and design pillars
+- **[Technical Stack](tech.md)** - Technologies, architecture, and current implementation status
+- **[Game Design Patterns](game-design-patterns.md)** - Architectural patterns and best practices
+- **[Data Architecture](data-architecture.md)** - ScriptableObject schemas and data structures
+- **[Unity Development Guidelines](unity-csharp-development.md)** - C# best practices for Unity 6
+
+## Implementation Status
+
+**Completed Systems** ✅:
+- Resource Management System (Nov 4, 2025)
+- Grid & Placement System (Nov 4, 2025)
+- Assembly definition structure
+- Custom build scripts
+- Test framework setup
+
+**In Progress** 🔄:
+- Machine Framework (29% complete)
+
+**Pending** ⏳:
+- Power Grid System
+- Logistics System
+- Research System
+- Mission System
+- UI System
 
 ## Root Directory Layout
 
@@ -206,11 +233,17 @@ Builds/
 
 ### Common Locations
 - **Game entry point**: `Assets/_Project/Scripts/Core/GameManager.cs`
-- **Machine definitions**: `Assets/_Project/ScriptableObjects/Machines/`
-- **Recipe data**: `Assets/_Project/ScriptableObjects/Recipes/`
+- **Resource Manager**: `Assets/_Project/Scripts/Core/ResourceManager.cs` ✅
+- **Grid Manager**: `Assets/_Project/Scripts/Core/GridManager.cs` ✅
+- **Placement Controller**: `Assets/_Project/Scripts/Core/PlacementController.cs` ✅
+- **Machine base classes**: `Assets/_Project/Scripts/Machines/` (🔄 In Progress)
+- **Resource definitions**: `Assets/_Project/Resources/ResourceDefinitions/` ✅
+- **Machine data**: `Assets/_Project/ScriptableObjects/` (Pending)
+- **Recipe data**: `Assets/_Project/ScriptableObjects/` (Pending)
 - **Main scene**: `Assets/_Project/Scenes/Workshop.unity`
-- **UI layouts**: `Assets/UI/UXML/`
-- **Research tree**: `Assets/_Project/ScriptableObjects/Research/`
+- **Test scenes**: `Assets/_Project/Scenes/TestScenes/`
+- **UI layouts**: `Assets/UI/UXML/` (Pending)
+- **Research tree**: `Assets/_Project/ScriptableObjects/Research/` (Pending)
 
 ### Search Tips
 - Use Unity's search bar with `t:` prefix (e.g., `t:ScriptableObject` finds all SOs)
