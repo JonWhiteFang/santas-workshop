@@ -192,7 +192,11 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Leave icon and itemPrefab null for now (will be added in art phase)
   - _Requirements: 1.1, 2.2_
 
-- [ ] 14. Create ResourceManager GameObject in Workshop scene
+- [x] 14. Create ResourceManager GameObject in Workshop scene
+
+
+
+
   - Open Workshop.unity scene
   - Create empty GameObject named "ResourceManager"
   - Add ResourceManager component
