@@ -177,7 +177,10 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Log warning for unknown resourceIds in save data
   - _Requirements: 15.1, 15.2, 15.3, 15.4, 15.5_
 
-- [ ] 13. Create sample ResourceData assets
+- [x] 13. Create sample ResourceData assets
+
+
+
   - Create Resources/ResourceDefinitions folder in Assets/_Project
   - Create 5-10 sample ResourceData assets covering different categories:
     - RawMaterial: Wood, IronOre, Coal
