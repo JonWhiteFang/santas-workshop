@@ -614,5 +614,105 @@ namespace SantasWorkshop.Core
         }
 
         #endregion
+
+        #region Save/Load
+
+        /// <summary>
+        /// Data structure for saving resource counts.
+        /// Contains an array of resource entries with non-zero counts.
+        /// </summary>
+        [Serializable]
+        public struct ResourceSaveData
+        {
+            public ResourceEntry[] resources;
+        }
+
+        /// <summary>
+        /// Individual resource entry for save data.
+        /// Contains the resource identifier and its amount.
+        /// </summary>
+        [Serializable]
+        public struct ResourceEntry
+        {
+            public string resourceId;
+            public long amount;
+        }
+
+        /// <summary>
+        /// Gets the current resource state as save data.
+        /// Only includes resources with non-zero counts to minimize save file size.
+        /// </summary>
+        /// <returns>ResourceSaveData containing all non-zero resource counts</returns>
+        public ResourceSaveData GetSaveData()
+        {
+            // Create list to hold resource entries
+            List<ResourceEntry> entries = new List<ResourceEntry>();
+
+            // Iterate through global resource counts
+            foreach (var kvp in _globalResourceCounts)
+            {
+                // Include only non-zero counts in save data
+                if (kvp.Value > 0)
+                {
+                    entries.Add(new ResourceEntry
+                    {
+                        resourceId = kvp.Key,
+                        amount = kvp.Value
+                    });
+                }
+            }
+
+            // Return save data with resource entries
+            return new ResourceSaveData
+            {
+                resources = entries.ToArray()
+            };
+        }
+
+        /// <summary>
+        /// Loads resource state from save data.
+        /// Resets all counts to zero first, then restores counts from save data.
+        /// Validates that each resourceId exists in the database before restoring.
+        /// Invokes OnResourceChanged events for all restored resources.
+        /// </summary>
+        /// <param name="saveData">The save data to load from</param>
+        public void LoadSaveData(ResourceSaveData saveData)
+        {
+            // Validate save data
+            if (saveData.resources == null)
+            {
+                Debug.LogWarning("LoadSaveData called with null resources array!");
+                return;
+            }
+
+            // Reset all counts to zero first
+            foreach (var resourceId in _globalResourceCounts.Keys)
+            {
+                _globalResourceCounts[resourceId] = 0;
+            }
+
+            // Restore counts from save data
+            foreach (var entry in saveData.resources)
+            {
+                // Validate resourceId exists in database before restoring
+                if (_resourceDatabase.ContainsKey(entry.resourceId))
+                {
+                    // Restore the count
+                    _globalResourceCounts[entry.resourceId] = entry.amount;
+                    
+                    // Invoke OnResourceChanged event for restored resource
+                    OnResourceChanged?.Invoke(entry.resourceId, entry.amount);
+                }
+                else
+                {
+                    // Log warning for unknown resourceIds in save data
+                    Debug.LogWarning($"LoadSaveData: Unknown resourceId '{entry.resourceId}' in save data. Skipping.");
+                }
+            }
+
+            Debug.Log($"Loaded {saveData.resources.Length} resource counts from save data.");
+        }
+
+        #endregion
     }
 }

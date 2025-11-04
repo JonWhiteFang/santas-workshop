@@ -159,7 +159,11 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Call Initialize() to reload resource database
   - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5_
 
-- [ ] 12. Implement save/load support
+- [x] 12. Implement save/load support
+
+
+
+
   - Create ResourceSaveData struct with ResourceEntry[] array field
   - Create ResourceEntry struct with resourceId string and amount long fields
   - Mark both structs with [Serializable] attribute
