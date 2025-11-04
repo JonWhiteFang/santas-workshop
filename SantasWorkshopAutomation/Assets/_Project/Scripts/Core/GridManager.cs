@@ -17,8 +17,13 @@ namespace SantasWorkshop.Core
         [SerializeField] private float cellSize = 1f;
         [SerializeField] private Vector3 gridOrigin = Vector3.zero;
 
+        [Header("Grid Visualization")]
+        [SerializeField] private bool enableGridVisualization = true;
+        [SerializeField] private Material gridLineMaterial;
+
         private GridData _gridData;
         private GridConfiguration _configuration;
+        private GridVisualizer _visualizer;
 
         /// <summary>
         /// Gets the current grid configuration.
@@ -40,6 +45,9 @@ namespace SantasWorkshop.Core
             // Initialize grid data
             _configuration = new GridConfiguration(gridWidth, gridHeight, cellSize, gridOrigin);
             _gridData = new GridData(gridWidth, gridHeight);
+
+            // Initialize grid visualizer
+            InitializeGridVisualizer();
 
             Debug.Log($"GridManager initialized: {gridWidth}x{gridHeight} grid with cell size {cellSize}");
         }
@@ -203,6 +211,46 @@ namespace SantasWorkshop.Core
         public List<Vector3Int> GetOccupiedCells(GameObject occupant)
         {
             return _gridData.GetCellsForOccupant(occupant);
+        }
+
+        #endregion
+
+        #region Grid Visualization
+
+        /// <summary>
+        /// Initializes the grid visualizer component.
+        /// </summary>
+        private void InitializeGridVisualizer()
+        {
+            if (!enableGridVisualization)
+            {
+                return;
+            }
+
+            // Add GridVisualizer component if not already present
+            _visualizer = gameObject.GetComponent<GridVisualizer>();
+            if (_visualizer == null)
+            {
+                _visualizer = gameObject.AddComponent<GridVisualizer>();
+            }
+
+            // Initialize with grid dimensions
+            _visualizer.Initialize(gridWidth, gridHeight, cellSize);
+            _visualizer.SetVisible(enableGridVisualization);
+        }
+
+        /// <summary>
+        /// Toggles grid line visualization on or off.
+        /// </summary>
+        /// <param name="enabled">True to show grid lines, false to hide</param>
+        public void SetGridVisualizationEnabled(bool enabled)
+        {
+            enableGridVisualization = enabled;
+            
+            if (_visualizer != null)
+            {
+                _visualizer.SetVisible(enabled);
+            }
         }
 
         #endregion

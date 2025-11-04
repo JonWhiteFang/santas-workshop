@@ -31,7 +31,7 @@
   - Implement GetRotation() helper method that converts rotation state (0-3) to Quaternion
   - _Requirements: 8.1, 8.2, 8.4, 8.5_
 
-- [ ] 4. Implement PlacementValidator static utility
+- [x] 4. Implement PlacementValidator static utility
   - Create PlacementValidator static class with ValidationResult enum (Valid, OutOfBounds, CellOccupied, InvalidTerrain, etc.)
   - Create ValidationInfo struct containing result, error message, and list of invalid cells
   - Implement ValidatePlacement() method that performs comprehensive validation for placement attempt
@@ -40,7 +40,7 @@
   - Implement GetOccupiedCells() helper that calculates cell list considering rotation
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 8.2_
 
-- [ ] 5. Create GhostPreview component
+- [x] 5. Create GhostPreview component
   - Create GhostPreview MonoBehaviour to manage visual preview during placement
   - Implement Initialize() to instantiate preview object from prefab and store material references
   - Implement UpdatePosition() to move ghost preview to specified world position with smooth updates
@@ -50,7 +50,7 @@
   - Implement Destroy() to clean up preview object when placement mode exits
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 8.4_
 
-- [ ] 6. Implement PlacementController
+- [x] 6. Implement PlacementController
   - Create PlacementController MonoBehaviour to orchestrate placement mode and user interaction
   - Add serialized fields for rotation key (default: R), cancel key (default: Escape), and placement materials
   - Implement EnterPlacementMode() to initialize placement state, create ghost preview, and store placement data
@@ -64,14 +64,14 @@
   - Implement RotateGhostPreview() to update rotation state and apply rotation to ghost preview
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 5.1, 5.2, 5.3, 5.4, 5.5, 6.1, 6.2, 6.3, 6.4, 6.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 7. Create placement materials
+- [x] 7. Create placement materials
   - Create valid placement material (URP/Lit) with green emission (0, 1, 0, 0.3) and 50% transparency
   - Create invalid placement material (URP/Lit) with red emission (1, 0, 0, 0.3) and 50% transparency
   - Configure both materials with appropriate render queue for transparency
   - Assign materials to PlacementController serialized fields in inspector
   - _Requirements: 3.3, 3.4_
 
-- [ ] 8. Implement GridVisualizer
+- [x] 8. Implement GridVisualizer
   - Create GridVisualizer MonoBehaviour to render grid lines for visual reference
   - Add serialized fields for grid line material, color (white with 0.2 alpha), and line width (0.02)
   - Implement Initialize() to generate LineRenderer components for all grid lines
@@ -80,7 +80,7 @@
   - Integrate GridVisualizer into GridManager with toggle method
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 9. Create test scene and test objects
+- [x] 9. Create test scene and test objects
   - Create GridPlacementTest scene in Assets/_Project/Scenes/TestScenes/
   - Add GridManager to scene with configured grid size (50x50) and cell size (1.0)
   - Add PlacementController to scene with configured input keys and materials
