@@ -4,19 +4,7 @@
   "description": "Monitors all C# source files and related project files for changes, then prompts the agent to update documentation in README.md or the /docs folder to keep documentation in sync with code changes",
   "version": "1",
   "when": {
-    "type": "fileEdited",
-    "patterns": [
-      "**/*.cs",
-      "**/*.csproj",
-      "**/*.sln",
-      "**/*.asset",
-      "**/*.prefab",
-      "**/*.unity",
-      "**/*.json",
-      "CONTRIBUTING.md",
-      "*.txt",
-      "*.pdf"
-    ]
+    "type": "userTriggered"
   },
   "then": {
     "type": "askAgent",

@@ -21,6 +21,10 @@ All project documentation is now organized in the **`Documentation/`** folder.
 ### Project Status
 - [Build Verification Report](Documentation/Reports/BUILD_VERIFICATION_REPORT.md) - Current project health
 
+### Implemented Systems
+- [Resource System Completion Summary](Documentation/Systems/RESOURCE_SYSTEM_COMPLETION_SUMMARY.md) - Resource System implementation details
+- [Integration Test Report](Documentation/Systems/INTEGRATION_TEST_REPORT.md) - Resource System test results
+
 ### Understanding Fixes
 - [What Happened](Documentation/Fixes/WHAT_HAPPENED.md) - Simple explanation
 - [All Fixes Complete](Documentation/Fixes/ALL_FIXES_COMPLETE.md) - Complete fix summary
@@ -34,7 +38,8 @@ Documentation/
 ├── README.md                    # Documentation index and guide
 ├── Fixes/                       # Compilation fixes (4 files)
 ├── Guides/                      # Quick reference guides (2 files)
-└── Reports/                     # Build reports (1 file)
+├── Reports/                     # Build reports (1 file)
+└── Systems/                     # Implemented system documentation (2 files)
 ```
 
 ---
