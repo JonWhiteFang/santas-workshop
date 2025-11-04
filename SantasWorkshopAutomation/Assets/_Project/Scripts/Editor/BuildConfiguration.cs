@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace SantasWorkshop.Editor
@@ -24,11 +25,7 @@ namespace SantasWorkshop.Editor
                 BuildTarget.StandaloneWindows64
             );
             
-            // Set architecture to x86_64
-            PlayerSettings.SetArchitecture(
-                BuildTargetGroup.Standalone, 
-                (int)ScriptingImplementation.Mono2x
-            );
+            // Architecture is set automatically for x86_64
             
             Debug.Log("✓ Windows x86_64 platform configured");
         }
@@ -54,13 +51,13 @@ namespace SantasWorkshop.Editor
             
             // Use Mono scripting backend for faster iteration
             PlayerSettings.SetScriptingBackend(
-                BuildTargetGroup.Standalone, 
+                NamedBuildTarget.Standalone, 
                 ScriptingImplementation.Mono2x
             );
             
             // Set stripping level to Disabled for development
             PlayerSettings.SetManagedStrippingLevel(
-                BuildTargetGroup.Standalone,
+                NamedBuildTarget.Standalone,
                 ManagedStrippingLevel.Disabled
             );
             
@@ -93,19 +90,19 @@ namespace SantasWorkshop.Editor
             
             // Use IL2CPP scripting backend for better performance
             PlayerSettings.SetScriptingBackend(
-                BuildTargetGroup.Standalone, 
+                NamedBuildTarget.Standalone, 
                 ScriptingImplementation.IL2CPP
             );
             
             // Set stripping level to High for smaller build size
             PlayerSettings.SetManagedStrippingLevel(
-                BuildTargetGroup.Standalone,
+                NamedBuildTarget.Standalone,
                 ManagedStrippingLevel.High
             );
             
             // Enable code optimization
             PlayerSettings.SetIl2CppCompilerConfiguration(
-                BuildTargetGroup.Standalone,
+                NamedBuildTarget.Standalone,
                 Il2CppCompilerConfiguration.Release
             );
             

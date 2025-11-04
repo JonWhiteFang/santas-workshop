@@ -204,7 +204,7 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Save scene
   - _Requirements: 2.1_
 
-- [ ] 15. Create test scene for resource system
+- [x] 15. Create test scene for resource system
   - Create TestScenes/TestScene_ResourceSystem.unity
   - Add ResourceManager GameObject
   - Add test UI canvas with buttons for Add/Consume/Query operations

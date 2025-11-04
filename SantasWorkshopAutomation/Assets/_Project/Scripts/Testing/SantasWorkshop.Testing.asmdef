@@ -1,13 +1,12 @@
 {
-    "name": "SantasWorkshop.Editor",
-    "rootNamespace": "SantasWorkshop.Editor",
+    "name": "SantasWorkshop.Testing",
+    "rootNamespace": "SantasWorkshop.Testing",
     "references": [
         "SantasWorkshop.Core",
-        "SantasWorkshop.Data"
+        "SantasWorkshop.Data",
+        "Unity.TextMeshPro"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
