@@ -2,14 +2,14 @@
 
 ## Task List
 
-- [ ] 1. Create core data structures and grid foundation
+- [x] 1. Create core data structures and grid foundation
   - Create GridData class with Dictionary-based cell storage for efficient sparse grid management
   - Implement cell occupation tracking with bidirectional mapping (cell → occupant, occupant → cells)
   - Implement bounds checking methods to validate grid positions are within defined grid boundaries
   - Create GridConfiguration struct to store grid dimensions, cell size, and origin point
   - _Requirements: 1.1, 1.5_
 
-- [ ] 2. Implement GridManager singleton
+- [x] 2. Implement GridManager singleton
   - Create GridManager MonoBehaviour with singleton pattern for global grid access
   - Implement Awake() to initialize GridData with configurable width, height, and cell size
   - Implement WorldToGrid() method to convert world coordinates to integer grid positions
@@ -21,7 +21,7 @@
   - Implement GetOccupant() to retrieve the game object occupying a specific cell
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 8.1, 8.2, 8.3, 8.5_
 
-- [ ] 3. Create PlacementData ScriptableObject
+- [x] 3. Create PlacementData ScriptableObject
   - Create PlacementData ScriptableObject with CreateAssetMenu attribute for designer-friendly creation
   - Add fields for object name, prefab reference, and grid size (Vector2Int for width/height)
   - Add pivot offset field (Vector3) to handle objects with non-centered pivots
