@@ -75,6 +75,9 @@ namespace SantasWorkshop.Core
 
         private void Start()
         {
+            // Initialize core systems
+            InitializeCoreSystem();
+
             // Initialize game state based on current scene
             string currentScene = SceneManager.GetActiveScene().name;
             if (currentScene == _workshopSceneName)
@@ -101,6 +104,46 @@ namespace SantasWorkshop.Core
                     ResumeGame();
                 }
             }
+        }
+
+        #endregion
+
+        #region System Initialization
+
+        /// <summary>
+        /// Initializes core game systems in the correct order.
+        /// </summary>
+        private void InitializeCoreSystem()
+        {
+            Debug.Log("[GameManager] Initializing core systems...");
+
+            // Initialize GridManager if in workshop scene
+            string currentScene = SceneManager.GetActiveScene().name;
+            if (currentScene == _workshopSceneName)
+            {
+                // GridManager should be in the scene, verify it exists
+                if (GridManager.Instance == null)
+                {
+                    Debug.LogWarning("[GameManager] GridManager not found in scene. Grid placement will not work.");
+                }
+                else
+                {
+                    Debug.Log("[GameManager] GridManager initialized successfully");
+                }
+
+                // PlacementController should be in the scene, verify it exists
+                PlacementController placementController = FindFirstObjectByType<PlacementController>();
+                if (placementController == null)
+                {
+                    Debug.LogWarning("[GameManager] PlacementController not found in scene. Placement functionality will not work.");
+                }
+                else
+                {
+                    Debug.Log("[GameManager] PlacementController found in scene");
+                }
+            }
+
+            Debug.Log("[GameManager] Core systems initialization complete");
         }
 
         #endregion
