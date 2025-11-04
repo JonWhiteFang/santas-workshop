@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="47" result="Passed" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.0385876">
+  <test-suite type="TestSuite" id="1000" name="SantasWorkshopAutomation" fullname="SantasWorkshopAutomation" runstate="Runnable" testcasecount="47" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.038588" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1050" name="SantasWorkshop.Tests.dll" fullname="C:/Projects/santas-workshop/SantasWorkshopAutomation/Library/ScriptAssemblies/SantasWorkshop.Tests.dll" runstate="Runnable" testcasecount="47" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.035061" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="49824" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1051" name="SantasWorkshop" fullname="SantasWorkshop" runstate="Runnable" testcasecount="47" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.034792" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1052" name="Tests" fullname="SantasWorkshop.Tests" runstate="Runnable" testcasecount="47" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.034649" total="47" passed="47" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="MachineBaseTests" fullname="SantasWorkshop.Tests.MachineBaseTests" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" testcasecount="19" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.019236" total="19" passed="19" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1020" name="FullLifecycle_InitializeTickShutdown" fullname="SantasWorkshop.Tests.MachineBaseTests.FullLifecycle_InitializeTickShutdown" methodname="FullLifecycle_InitializeTickShutdown" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="272332979" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.009184" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="Initialize_SetsCorrectState" fullname="SantasWorkshop.Tests.MachineBaseTests.Initialize_SetsCorrectState" methodname="Initialize_SetsCorrectState" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="651439153" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000217" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="Initialize_SetsMachineId" fullname="SantasWorkshop.Tests.MachineBaseTests.Initialize_SetsMachineId" methodname="Initialize_SetsMachineId" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="268214186" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000159" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="Initialize_SetsPowerConsumption" fullname="SantasWorkshop.Tests.MachineBaseTests.Initialize_SetsPowerConsumption" methodname="Initialize_SetsPowerConsumption" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="354540047" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000363" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="Initialize_WithNullData_HandlesGracefully" fullname="SantasWorkshop.Tests.MachineBaseTests.Initialize_WithNullData_HandlesGracefully" methodname="Initialize_WithNullData_HandlesGracefully" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="1485122936" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000165" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1013" name="SetPowered_DifferentValue_TriggersChange" fullname="SantasWorkshop.Tests.MachineBaseTests.SetPowered_DifferentValue_TriggersChange" methodname="SetPowered_DifferentValue_TriggersChange" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="1377619321" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000134" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="SetPowered_False_ClearsPoweredState" fullname="SantasWorkshop.Tests.MachineBaseTests.SetPowered_False_ClearsPoweredState" methodname="SetPowered_False_ClearsPoweredState" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="310808133" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000131" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1011" name="SetPowered_False_WhileWorking_ChangesToIdle" fullname="SantasWorkshop.Tests.MachineBaseTests.SetPowered_False_WhileWorking_ChangesToIdle" methodname="SetPowered_False_WhileWorking_ChangesToIdle" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="791289101" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000137" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1012" name="SetPowered_SameValue_DoesNotTriggerChange" fullname="SantasWorkshop.Tests.MachineBaseTests.SetPowered_SameValue_DoesNotTriggerChange" methodname="SetPowered_SameValue_DoesNotTriggerChange" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="224899674" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000131" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="SetPowered_True_SetsPoweredState" fullname="SantasWorkshop.Tests.MachineBaseTests.SetPowered_True_SetsPoweredState" methodname="SetPowered_True_SetsPoweredState" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="1366092316" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000126" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1015" name="SetState_ChangesState" fullname="SantasWorkshop.Tests.MachineBaseTests.SetState_ChangesState" methodname="SetState_ChangesState" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="1800953484" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000120" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1017" name="SetState_SameState_DoesNotTriggerChange" fullname="SantasWorkshop.Tests.MachineBaseTests.SetState_SameState_DoesNotTriggerChange" methodname="SetState_SameState_DoesNotTriggerChange" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="870276258" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000123" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="SetState_TriggersStateChanged" fullname="SantasWorkshop.Tests.MachineBaseTests.SetState_TriggersStateChanged" methodname="SetState_TriggersStateChanged" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="1520803433" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000115" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1006" name="Shutdown_ChangesStateToOffline" fullname="SantasWorkshop.Tests.MachineBaseTests.Shutdown_ChangesStateToOffline" methodname="Shutdown_ChangesStateToOffline" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="750370598" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000124" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="Shutdown_FromWorkingState_ChangesToOffline" fullname="SantasWorkshop.Tests.MachineBaseTests.Shutdown_FromWorkingState_ChangesToOffline" methodname="Shutdown_FromWorkingState_ChangesToOffline" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="601367347" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000127" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="Shutdown_SetsPoweredToFalse" fullname="SantasWorkshop.Tests.MachineBaseTests.Shutdown_SetsPoweredToFalse" methodname="Shutdown_SetsPoweredToFalse" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="963531670" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000115" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1014" name="State_ReturnsCurrentState" fullname="SantasWorkshop.Tests.MachineBaseTests.State_ReturnsCurrentState" methodname="State_ReturnsCurrentState" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="937277775" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000114" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1018" name="Tick_IsCalled" fullname="SantasWorkshop.Tests.MachineBaseTests.Tick_IsCalled" methodname="Tick_IsCalled" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="360776866" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000117" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1019" name="Tick_ReceivesDeltaTime" fullname="SantasWorkshop.Tests.MachineBaseTests.Tick_ReceivesDeltaTime" methodname="Tick_ReceivesDeltaTime" classname="SantasWorkshop.Tests.MachineBaseTests" runstate="Runnable" seed="296753457" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000443" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1021" name="ResourceManagerTests" fullname="SantasWorkshop.Tests.ResourceManagerTests" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.014683" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1022" name="AddResource_IncreasesCount" fullname="SantasWorkshop.Tests.ResourceManagerTests.AddResource_IncreasesCount" methodname="AddResource_IncreasesCount" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="732230098" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.001518" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1024" name="AddResource_InvalidResourceId_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.AddResource_InvalidResourceId_ReturnsFalse" methodname="AddResource_InvalidResourceId_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="248619277" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.001561" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Unknown resourceId: invalid_resource
+]]></output>
+            </test-case>
+            <test-case id="1023" name="AddResource_MultipleTimes_Accumulates" fullname="SantasWorkshop.Tests.ResourceManagerTests.AddResource_MultipleTimes_Accumulates" methodname="AddResource_MultipleTimes_Accumulates" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="519774586" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000197" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="AddResource_NegativeAmount_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.AddResource_NegativeAmount_ReturnsFalse" methodname="AddResource_NegativeAmount_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="733515696" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000590" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Resource operation with negative amount: -10
+]]></output>
+            </test-case>
+            <test-case id="1033" name="GetResourceCapacity_ReturnsCorrectValue" fullname="SantasWorkshop.Tests.ResourceManagerTests.GetResourceCapacity_ReturnsCorrectValue" methodname="GetResourceCapacity_ReturnsCorrectValue" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="2079212557" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000268" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1043" name="GetResourceData_EmptyResourceId_ReturnsNull" fullname="SantasWorkshop.Tests.ResourceManagerTests.GetResourceData_EmptyResourceId_ReturnsNull" methodname="GetResourceData_EmptyResourceId_ReturnsNull" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="60636632" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000273" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1042" name="GetResourceData_InvalidResourceId_ReturnsNull" fullname="SantasWorkshop.Tests.ResourceManagerTests.GetResourceData_InvalidResourceId_ReturnsNull" methodname="GetResourceData_InvalidResourceId_ReturnsNull" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="444625322" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000137" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1041" name="GetResourceData_ValidResourceId_ReturnsCorrectData" fullname="SantasWorkshop.Tests.ResourceManagerTests.GetResourceData_ValidResourceId_ReturnsCorrectData" methodname="GetResourceData_ValidResourceId_ReturnsCorrectData" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1860467573" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000861" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1047" name="GetSaveData_OnlyIncludesNonZeroResources" fullname="SantasWorkshop.Tests.ResourceManagerTests.GetSaveData_OnlyIncludesNonZeroResources" methodname="GetSaveData_OnlyIncludesNonZeroResources" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1225452551" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000694" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1039" name="HasResource_InvalidResourceId_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.HasResource_InvalidResourceId_ReturnsFalse" methodname="HasResource_InvalidResourceId_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="252103240" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000199" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1040" name="HasResource_NegativeAmount_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.HasResource_NegativeAmount_ReturnsFalse" methodname="HasResource_NegativeAmount_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="996480163" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000127" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1038" name="HasResource_WithInsufficientAmount_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.HasResource_WithInsufficientAmount_ReturnsFalse" methodname="HasResource_WithInsufficientAmount_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="435278797" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000118" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1037" name="HasResource_WithSufficientAmount_ReturnsTrue" fullname="SantasWorkshop.Tests.ResourceManagerTests.HasResource_WithSufficientAmount_ReturnsTrue" methodname="HasResource_WithSufficientAmount_ReturnsTrue" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="285042066" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000113" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1048" name="LoadSaveData_FiresEventsForRestoredResources" fullname="SantasWorkshop.Tests.ResourceManagerTests.LoadSaveData_FiresEventsForRestoredResources" methodname="LoadSaveData_FiresEventsForRestoredResources" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="564946490" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.001301" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Reset 2 resources to zero.
+Loaded 2 resource counts from save data.
+]]></output>
+            </test-case>
+            <test-case id="1049" name="LoadSaveData_HandlesUnknownResourceIds" fullname="SantasWorkshop.Tests.ResourceManagerTests.LoadSaveData_HandlesUnknownResourceIds" methodname="LoadSaveData_HandlesUnknownResourceIds" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="263137054" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000756" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[LoadSaveData: Unknown resourceId 'unknown_resource' in save data. Skipping.
+Loaded 2 resource counts from save data.
+]]></output>
+            </test-case>
+            <test-case id="1036" name="OnResourceChanged_DoesNotFireWhenConsumptionFails" fullname="SantasWorkshop.Tests.ResourceManagerTests.OnResourceChanged_DoesNotFireWhenConsumptionFails" methodname="OnResourceChanged_DoesNotFireWhenConsumptionFails" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1396997036" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000247" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1034" name="OnResourceChanged_FiresWhenResourceAdded" fullname="SantasWorkshop.Tests.ResourceManagerTests.OnResourceChanged_FiresWhenResourceAdded" methodname="OnResourceChanged_FiresWhenResourceAdded" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="376784309" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000213" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1035" name="OnResourceChanged_FiresWhenResourceConsumed" fullname="SantasWorkshop.Tests.ResourceManagerTests.OnResourceChanged_FiresWhenResourceConsumed" methodname="OnResourceChanged_FiresWhenResourceConsumed" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1955335759" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000188" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1044" name="ResetResources_ClearsAllCounts" fullname="SantasWorkshop.Tests.ResourceManagerTests.ResetResources_ClearsAllCounts" methodname="ResetResources_ClearsAllCounts" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="756299904" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000419" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Reset 3 resources to zero.
+]]></output>
+            </test-case>
+            <test-case id="1045" name="ResetResources_FiresEventsForResetResources" fullname="SantasWorkshop.Tests.ResourceManagerTests.ResetResources_FiresEventsForResetResources" methodname="ResetResources_FiresEventsForResetResources" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1109187462" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000454" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Reset 2 resources to zero.
+]]></output>
+            </test-case>
+            <test-case id="1046" name="SaveLoad_PreservesResourceCounts" fullname="SantasWorkshop.Tests.ResourceManagerTests.SaveLoad_PreservesResourceCounts" methodname="SaveLoad_PreservesResourceCounts" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1503612766" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000672" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Reset 3 resources to zero.
+Loaded 3 resource counts from save data.
+]]></output>
+            </test-case>
+            <test-case id="1031" name="SetResourceCapacity_LimitsAdditions" fullname="SantasWorkshop.Tests.ResourceManagerTests.SetResourceCapacity_LimitsAdditions" methodname="SetResourceCapacity_LimitsAdditions" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1847790322" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000722" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Added only 100 test_wood (capacity limit reached)
+]]></output>
+            </test-case>
+            <test-case id="1032" name="SetResourceCapacity_Zero_MeansUnlimited" fullname="SantasWorkshop.Tests.ResourceManagerTests.SetResourceCapacity_Zero_MeansUnlimited" methodname="SetResourceCapacity_Zero_MeansUnlimited" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="911070405" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000175" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="TryConsumeResource_ExactAmount_ReturnsTrue" fullname="SantasWorkshop.Tests.ResourceManagerTests.TryConsumeResource_ExactAmount_ReturnsTrue" methodname="TryConsumeResource_ExactAmount_ReturnsTrue" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1934664949" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000146" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="TryConsumeResource_WithInsufficientResources_ReturnsFalse" fullname="SantasWorkshop.Tests.ResourceManagerTests.TryConsumeResource_WithInsufficientResources_ReturnsFalse" methodname="TryConsumeResource_WithInsufficientResources_ReturnsFalse" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="1587842477" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000134" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1026" name="TryConsumeResource_WithSufficientResources_ReturnsTrue" fullname="SantasWorkshop.Tests.ResourceManagerTests.TryConsumeResource_WithSufficientResources_ReturnsTrue" methodname="TryConsumeResource_WithSufficientResources_ReturnsTrue" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="572399054" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000132" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1030" name="TryConsumeResources_AllSufficient_ReturnsTrue" fullname="SantasWorkshop.Tests.ResourceManagerTests.TryConsumeResources_AllSufficient_ReturnsTrue" methodname="TryConsumeResources_AllSufficient_ReturnsTrue" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="372640144" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000337" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="TryConsumeResources_AtomicBehavior_AllOrNothing" fullname="SantasWorkshop.Tests.ResourceManagerTests.TryConsumeResources_AtomicBehavior_AllOrNothing" methodname="TryConsumeResources_AtomicBehavior_AllOrNothing" classname="SantasWorkshop.Tests.ResourceManagerTests" runstate="Runnable" seed="982892912" result="Passed" start-time="2025-11-04 20:58:44Z" end-time="2025-11-04 20:58:44Z" duration="0.000242" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/jono2/AppData/LocalLow/DefaultCompany/SantasWorkshopAutomation\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
