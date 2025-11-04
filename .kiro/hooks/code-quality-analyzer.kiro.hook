@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Code Quality Analyzer",
+  "description": "Monitors source code files for changes and provides suggestions for code quality improvements, including code smells, design patterns, best practices, readability, maintainability, and performance optimizations",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.cs",
+      "**/*.csproj",
+      "**/*.sln"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the modified C# source code files for potential improvements. Focus on:\n\n1. **Code Smells**: Identify anti-patterns, duplicated code, long methods, large classes, and other maintainability issues\n2. **Design Patterns**: Suggest appropriate design patterns from the game-design-patterns.md (ECS, Command, State Machine, Observer, Factory, etc.)\n3. **Unity Best Practices**: Check adherence to Unity 6 and C# guidelines from unity-csharp-development.md (MonoBehaviour lifecycle, serialization, performance, async/await usage)\n4. **Architecture Compliance**: Verify alignment with project architecture (data-driven design, separation of concerns, ScriptableObject usage)\n5. **Performance Optimizations**: Identify expensive operations in Update loops, missing component caching, LINQ in hot paths, object pooling opportunities\n6. **Readability**: Suggest improvements for naming conventions, code organization, comments, and clarity\n7. **Maintainability**: Check for proper error handling, event subscription cleanup, state management, and testability\n\nFor each suggestion:\n- Explain the issue clearly\n- Provide specific code examples showing the problem\n- Offer concrete solutions with code snippets\n- Prioritize suggestions by impact (Critical, High, Medium, Low)\n- Maintain the existing functionality while improving quality\n\nBe constructive and educational in your feedback. Focus on actionable improvements that align with the project's established patterns and guidelines."
+  }
+}

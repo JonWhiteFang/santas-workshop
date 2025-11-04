@@ -563,5 +563,56 @@ namespace SantasWorkshop.Core
         }
 
         #endregion
+
+        #region Reset
+
+        /// <summary>
+        /// Resets all resource counts to zero while preserving the resource database registration.
+        /// Invokes OnResourceChanged events for all resources that had non-zero counts.
+        /// </summary>
+        public void ResetResources()
+        {
+            // Find all resources with non-zero counts using LINQ Where()
+            var resourcesToReset = new List<string>();
+            
+            foreach (var kvp in _globalResourceCounts)
+            {
+                if (kvp.Value > 0)
+                {
+                    resourcesToReset.Add(kvp.Key);
+                }
+            }
+
+            // Set each count to zero and invoke OnResourceChanged event
+            foreach (var resourceId in resourcesToReset)
+            {
+                _globalResourceCounts[resourceId] = 0;
+                OnResourceChanged?.Invoke(resourceId, 0);
+            }
+
+            Debug.Log($"Reset {resourcesToReset.Count} resources to zero.");
+        }
+
+        /// <summary>
+        /// Resets the entire resource system to defaults.
+        /// Clears all dictionaries, sets initialization flag to false, and reinitializes the system.
+        /// </summary>
+        public void ResetToDefaults()
+        {
+            // Clear all dictionaries
+            _resourceDatabase.Clear();
+            _globalResourceCounts.Clear();
+            _resourceCapacities.Clear();
+
+            // Set initialization flag to false
+            _isInitialized = false;
+
+            Debug.Log("Resource system reset to defaults. Reinitializing...");
+
+            // Reload resource database
+            Initialize();
+        }
+
+        #endregion
     }
 }

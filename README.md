@@ -77,7 +77,7 @@ SantasWorkshopAutomation/
 
 ### Required Unity Packages
 
-The following packages are required and should be installed via Unity Package Manager:
+The following packages are required and should be installed via the Unity Package Manager:
 
 - **Universal RP** (com.unity.render-pipelines.universal)
 - **Burst Compiler** (com.unity.burst)
@@ -126,7 +126,7 @@ cd SantasWorkshopAutomation
 
 ### Building
 
-#### Quick Build (Using Unity Editor Menu)
+#### Quick Build (Using the Unity Editor Menu)
 
 The project includes custom build scripts accessible from the Unity Editor menu:
 
@@ -147,7 +147,7 @@ The project includes custom build scripts accessible from the Unity Editor menu:
 
 To manually configure development build settings:
 
-1. **From Unity Editor Menu**: `Santa's Workshop → Build → Configure Development Settings`
+1. **From the Unity Editor Menu**: `Santa's Workshop → Build → Configure Development Settings`
 
 2. **Manual Configuration**:
    - File → Build Settings → Select "Windows, Mac, Linux" platform
@@ -180,7 +180,7 @@ To manually configure development build settings:
 
 To manually configure release build settings:
 
-1. **From Unity Editor Menu**: `Santa's Workshop → Build → Configure Release Settings`
+1. **From the Unity Editor Menu**: `Santa's Workshop → Build → Configure Release Settings`
 
 2. **Manual Configuration**:
    - File → Build Settings → Select "Windows, Mac, Linux" platform

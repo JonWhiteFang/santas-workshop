@@ -143,7 +143,11 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Return true on success, false on failure
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-- [ ] 11. Implement reset methods
+- [x] 11. Implement reset methods
+
+
+
+
   - Create ResetResources() method
   - Find all resources with non-zero counts using LINQ Where()
   - Set each count to zero in _globalResourceCounts

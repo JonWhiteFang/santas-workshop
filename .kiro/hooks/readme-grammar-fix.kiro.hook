@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "README Grammar Review",
+  "description": "Manually triggered hook to review and fix grammar errors in README.md file",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the README.md file for grammar errors and fix them. Use mcp_filesystem_read_text_file to read the README.md file, then use mcp_filesystem_edit_file to fix any grammar errors you find. Provide a summary of the changes made."
+  }
+}
