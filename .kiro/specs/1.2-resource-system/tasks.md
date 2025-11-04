@@ -75,7 +75,11 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Add null/empty array validation
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 7.1, 7.2, 7.3, 7.4, 7.5, 14.3_
 
-- [ ] 6. Implement TryConsumeResource and TryConsumeResources methods
+- [x] 6. Implement TryConsumeResource and TryConsumeResources methods
+
+
+
+
   - Create TryConsumeResource(string resourceId, int amount) method
   - Validate resourceId exists and amount is positive
   - Check if sufficient resources available using GetResourceCount()

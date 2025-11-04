@@ -223,6 +223,85 @@ namespace SantasWorkshop.Core
 
         #endregion
 
+        #region Consume Resources
+
+        /// <summary>
+        /// Attempts to consume a specified amount of a resource from the global inventory.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <param name="amount">The amount to consume (must be positive)</param>
+        /// <returns>True if the resource was consumed successfully, false if insufficient resources</returns>
+        public bool TryConsumeResource(string resourceId, int amount)
+        {
+            // Validate the operation
+            if (!ValidateResourceOperation(resourceId, amount))
+            {
+                return false;
+            }
+
+            // Check if sufficient resources are available
+            long currentCount = GetResourceCount(resourceId);
+            
+            if (currentCount < amount)
+            {
+                // Insufficient resources - return false without logging error
+                return false;
+            }
+
+            // Sufficient resources available - consume them
+            long newCount = currentCount - amount;
+            _globalResourceCounts[resourceId] = newCount;
+            
+            // Invoke resource changed event
+            OnResourceChanged?.Invoke(resourceId, newCount);
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Attempts to consume multiple resources from the global inventory atomically.
+        /// All resources must be available or none will be consumed.
+        /// </summary>
+        /// <param name="resources">Array of resource stacks to consume</param>
+        /// <returns>True if all resources were consumed successfully, false if any resource is insufficient</returns>
+        public bool TryConsumeResources(ResourceStack[] resources)
+        {
+            // Validate input
+            if (resources == null || resources.Length == 0)
+            {
+                Debug.LogWarning("TryConsumeResources called with null or empty array!");
+                return false;
+            }
+
+            // First pass: Validate ALL resources are available (atomic check)
+            foreach (var stack in resources)
+            {
+                // Validate the stack
+                if (!ValidateResourceOperation(stack.resourceId, stack.amount))
+                {
+                    return false;
+                }
+
+                // Check if sufficient resources available
+                long currentCount = GetResourceCount(stack.resourceId);
+                if (currentCount < stack.amount)
+                {
+                    // Insufficient resources - abort entire operation
+                    return false;
+                }
+            }
+
+            // Second pass: All resources are available, consume them
+            foreach (var stack in resources)
+            {
+                TryConsumeResource(stack.resourceId, stack.amount);
+            }
+
+            return true;
+        }
+
+        #endregion
+
         #region Query Resources
 
         /// <summary>
