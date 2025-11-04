@@ -686,7 +686,9 @@ namespace SantasWorkshop.Core
             }
 
             // Reset all counts to zero first
-            foreach (var resourceId in _globalResourceCounts.Keys)
+            // Create a copy of keys to avoid collection modification during enumeration
+            var resourceIds = new List<string>(_globalResourceCounts.Keys);
+            foreach (var resourceId in resourceIds)
             {
                 _globalResourceCounts[resourceId] = 0;
             }

@@ -212,7 +212,12 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Create simple test script to trigger ResourceManager methods
   - _Requirements: Testing Strategy_
 
-- [ ] 16. Write unit tests for ResourceManager
+- [x] 16. Write unit tests for ResourceManager
+
+
+
+
+
   - Create Tests/Runtime/ResourceManagerTests.cs
   - Write test for AddResource increases count
   - Write test for TryConsumeResource with sufficient resources returns true
