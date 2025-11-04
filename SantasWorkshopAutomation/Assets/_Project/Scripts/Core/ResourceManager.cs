@@ -27,6 +27,12 @@ namespace SantasWorkshop.Core
         /// </summary>
         public event Action OnResourceSystemInitialized;
 
+        /// <summary>
+        /// Event fired when a resource count changes.
+        /// Parameters: resourceId, newAmount
+        /// </summary>
+        public event Action<string, long> OnResourceChanged;
+
         #endregion
 
         #region Private Fields
@@ -143,6 +149,151 @@ namespace SantasWorkshop.Core
 
             // Invoke initialization event
             OnResourceSystemInitialized?.Invoke();
+        }
+
+        #endregion
+
+        #region Add Resources
+
+        /// <summary>
+        /// Adds a specified amount of a resource to the global inventory.
+        /// Respects capacity limits if set.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <param name="amount">The amount to add (must be positive)</param>
+        /// <returns>True if the resource was added successfully, false otherwise</returns>
+        public bool AddResource(string resourceId, int amount)
+        {
+            // Validate the operation
+            if (!ValidateResourceOperation(resourceId, amount))
+            {
+                return false;
+            }
+
+            // Get current count and capacity
+            long currentCount = GetResourceCount(resourceId);
+            long capacity = GetResourceCapacity(resourceId);
+            long newCount = currentCount + amount;
+
+            // Check capacity limit (0 means unlimited)
+            if (capacity > 0 && newCount > capacity)
+            {
+                // Calculate how much we can actually add
+                long actualAdded = capacity - currentCount;
+                
+                if (actualAdded <= 0)
+                {
+                    Debug.LogWarning($"Cannot add {amount} {resourceId}: at capacity ({capacity})");
+                    return false;
+                }
+
+                // Add only up to capacity
+                _globalResourceCounts[resourceId] = capacity;
+                OnResourceChanged?.Invoke(resourceId, capacity);
+                Debug.LogWarning($"Added only {actualAdded} {resourceId} (capacity limit reached)");
+                return true;
+            }
+
+            // No capacity limit or within limit - add full amount
+            _globalResourceCounts[resourceId] = newCount;
+            OnResourceChanged?.Invoke(resourceId, newCount);
+            return true;
+        }
+
+        /// <summary>
+        /// Adds multiple resources to the global inventory.
+        /// Processes each resource individually.
+        /// </summary>
+        /// <param name="resources">Array of resource stacks to add</param>
+        public void AddResources(ResourceStack[] resources)
+        {
+            // Validate input
+            if (resources == null || resources.Length == 0)
+            {
+                Debug.LogWarning("AddResources called with null or empty array!");
+                return;
+            }
+
+            // Add each resource
+            foreach (var stack in resources)
+            {
+                AddResource(stack.resourceId, stack.amount);
+            }
+        }
+
+        #endregion
+
+        #region Query Resources
+
+        /// <summary>
+        /// Gets the current count of a resource in the global inventory.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <returns>The current count, or 0 if the resource doesn't exist</returns>
+        public long GetResourceCount(string resourceId)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                return 0;
+            }
+
+            return _globalResourceCounts.TryGetValue(resourceId, out long count) ? count : 0;
+        }
+
+        #endregion
+
+        #region Capacity Management
+
+        /// <summary>
+        /// Gets the capacity limit for a resource.
+        /// </summary>
+        /// <param name="resourceId">The unique identifier of the resource</param>
+        /// <returns>The capacity limit, or 0 if unlimited</returns>
+        public long GetResourceCapacity(string resourceId)
+        {
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                return 0;
+            }
+
+            return _resourceCapacities.TryGetValue(resourceId, out long capacity) ? capacity : 0;
+        }
+
+        #endregion
+
+        #region Validation
+
+        /// <summary>
+        /// Validates a resource operation (add/consume).
+        /// Checks if resourceId exists and amount is valid.
+        /// </summary>
+        /// <param name="resourceId">The resource identifier to validate</param>
+        /// <param name="amount">The amount to validate</param>
+        /// <returns>True if the operation is valid, false otherwise</returns>
+        private bool ValidateResourceOperation(string resourceId, int amount)
+        {
+            // Check resourceId is not empty
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                Debug.LogWarning("Resource operation with empty resourceId!");
+                return false;
+            }
+
+            // Check amount is not negative
+            if (amount < 0)
+            {
+                Debug.LogWarning($"Resource operation with negative amount: {amount}");
+                return false;
+            }
+
+            // Check resourceId exists in database
+            if (!_resourceDatabase.ContainsKey(resourceId))
+            {
+                Debug.LogWarning($"Unknown resourceId: {resourceId}");
+                return false;
+            }
+
+            return true;
         }
 
         #endregion

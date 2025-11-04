@@ -59,7 +59,12 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Call Initialize() from Start() lifecycle method
   - _Requirements: 2.2, 2.3, 13.1, 13.2, 13.3, 13.4, 13.5_
 
-- [ ] 5. Implement AddResource and AddResources methods
+- [x] 5. Implement AddResource and AddResources methods
+
+
+
+
+
   - Create AddResource(string resourceId, int amount) method
   - Validate resourceId exists and amount is positive using ValidateResourceOperation()
   - Check capacity limits using GetResourceCapacity()
