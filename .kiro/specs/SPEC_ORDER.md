@@ -26,7 +26,7 @@
 - [x] **1.2: Resource System** (2 weeks | Needs: 1.1)
   - Resource data structures, categories, manager, storage/transfer logic
 
-- [ ] **1.3: Grid & Placement System** (2 weeks | Needs: 1.1)
+- [x] **1.3: Grid & Placement System** (2 weeks | Needs: 1.1)
   - Tile-based grid, placement validation, ghost preview, rotation, snapping
 
 - [ ] **1.4: Machine Framework** (3 weeks | Needs: 1.2, 1.3)
