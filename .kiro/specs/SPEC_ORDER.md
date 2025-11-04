@@ -29,7 +29,7 @@
 - [x] **1.3: Grid & Placement System** (2 weeks | Needs: 1.1)
   - Tile-based grid, placement validation, ghost preview, rotation, snapping
 
-- [-] **1.4: Machine Framework** (3 weeks | Needs: 1.2, 1.3)
+- [x] **1.4: Machine Framework** (3 weeks | Needs: 1.2, 1.3)
   - Base machine class, states, input/output ports, recipe system, power interface
 
 - [ ] **1.5: Time & Simulation Manager** (1 week | Needs: 1.1)

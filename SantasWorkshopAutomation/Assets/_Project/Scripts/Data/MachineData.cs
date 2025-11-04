@@ -1,142 +1,168 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SantasWorkshop.Data
 {
     /// <summary>
-    /// ScriptableObject that defines a machine type in the game.
-    /// Contains configuration for machine behavior, costs, and requirements.
+    /// Configuration data for a machine type.
+    /// Defines all properties, stats, and capabilities of a machine.
     /// </summary>
-    [CreateAssetMenu(fileName = "New Machine", menuName = "Santa's Workshop/Machine", order = 3)]
+    [CreateAssetMenu(fileName = "NewMachineData", menuName = "Santa/Machine Data", order = 2)]
     public class MachineData : ScriptableObject
     {
         [Header("Basic Info")]
-        [Tooltip("Unique identifier for this machine")]
-        public string machineId;
-
-        [Tooltip("Display name shown to players")]
-        public string displayName;
-
+        [Tooltip("Display name of the machine")]
+        public string machineName;
+        
         [Tooltip("Description of what this machine does")]
-        [TextArea(2, 4)]
+        [TextArea(3, 5)]
         public string description;
-
-        [Tooltip("Icon representing this machine in the UI")]
+        
+        [Tooltip("Icon displayed in UI")]
         public Sprite icon;
-
-        [Header("Machine Properties")]
-        [Tooltip("Category of this machine")]
-        public MachineCategory category = MachineCategory.Processor;
-
-        [Tooltip("Prefab to instantiate when building this machine")]
-        public GameObject prefab;
-
-        [Tooltip("Power consumption in units per second")]
-        [Range(0f, 1000f)]
-        public float powerConsumption = 10f;
-
-        [Tooltip("Processing speed multiplier (higher = faster)")]
-        [Range(0.1f, 10f)]
-        public float speedMultiplier = 1f;
-
-        [Header("Building Cost")]
-        [Tooltip("Resources required to build this machine")]
-        public ResourceStack[] buildCost;
-
-        [Tooltip("Time in seconds to construct this machine")]
-        [Range(0.1f, 60f)]
-        public float buildTime = 5f;
-
-        [Header("Requirements")]
-        [Tooltip("Research IDs required to unlock this machine")]
-        public string[] requiredResearch;
-
-        [Tooltip("Minimum tier/level required to build")]
-        [Range(1, 10)]
-        public int minimumTier = 1;
-
-        [Header("Capacity")]
-        [Tooltip("Input buffer size (for processors/assemblers)")]
-        [Range(1, 100)]
-        public int inputBufferSize = 10;
-
-        [Tooltip("Output buffer size (for processors/assemblers)")]
-        [Range(1, 100)]
-        public int outputBufferSize = 10;
-
-        [Header("Extractor Settings")]
-        [Tooltip("Extraction rate for extractor machines (resources per second)")]
-        [Range(0.1f, 100f)]
-        public float extractionRate = 1f;
-
-        [Tooltip("Extraction range for extractor machines")]
-        [Range(1f, 50f)]
-        public float extractionRange = 5f;
-
+        
+        [Header("Grid Properties")]
+        [Tooltip("Size of the machine in grid cells (width x depth)")]
+        public Vector2Int gridSize = new Vector2Int(1, 1);
+        
+        [Tooltip("Tier level of this machine (affects speed and efficiency)")]
+        [Min(1)]
+        public int tier = 1;
+        
+        [Header("Performance")]
+        [Tooltip("Base processing speed multiplier (1.0 = normal speed)")]
+        [Min(0.1f)]
+        public float baseProcessingSpeed = 1f;
+        
+        [Tooltip("Base power consumption in watts")]
+        [Min(0f)]
+        public float basePowerConsumption = 10f;
+        
+        [Header("Ports")]
+        [Tooltip("Number of input ports for receiving resources")]
+        [Min(0)]
+        public int inputPortCount = 1;
+        
+        [Tooltip("Number of output ports for sending resources")]
+        [Min(0)]
+        public int outputPortCount = 1;
+        
+        [Tooltip("Local positions of input ports relative to machine center")]
+        public Vector3[] inputPortPositions;
+        
+        [Tooltip("Local positions of output ports relative to machine center")]
+        public Vector3[] outputPortPositions;
+        
+        [Header("Buffers")]
+        [Tooltip("Maximum capacity of each input/output buffer")]
+        [Min(1)]
+        public int bufferCapacity = 10;
+        
+        [Header("Recipes")]
+        [Tooltip("List of recipes this machine can process")]
+        public List<Recipe> availableRecipes = new List<Recipe>();
+        
         [Header("Visual")]
-        [Tooltip("Color tint for this machine in the UI")]
-        public Color machineColor = Color.white;
-
+        [Tooltip("Prefab to instantiate for this machine")]
+        public GameObject prefab;
+        
         /// <summary>
-        /// Validates the machine data on enable.
+        /// Validates the machine data configuration in the Unity Editor.
+        /// Automatically initializes port position arrays and checks for errors.
         /// </summary>
         private void OnValidate()
         {
-            // Auto-generate machineId from asset name if empty
-            if (string.IsNullOrEmpty(machineId))
+            // Initialize input port positions if needed
+            if (inputPortPositions == null || inputPortPositions.Length != inputPortCount)
             {
-                machineId = name.ToLower().Replace(" ", "_");
-            }
-
-            // Ensure display name is set
-            if (string.IsNullOrEmpty(displayName))
-            {
-                displayName = name;
-            }
-
-            // Ensure build time is positive
-            if (buildTime <= 0f)
-            {
-                buildTime = 0.1f;
-            }
-        }
-
-        /// <summary>
-        /// Checks if this machine is unlocked based on research.
-        /// </summary>
-        /// <param name="unlockedResearch">Array of unlocked research IDs</param>
-        public bool IsUnlocked(string[] unlockedResearch)
-        {
-            if (requiredResearch == null || requiredResearch.Length == 0)
-                return true; // No research requirements
-
-            if (unlockedResearch == null || unlockedResearch.Length == 0)
-                return false; // Has requirements but nothing unlocked
-
-            foreach (var required in requiredResearch)
-            {
-                bool found = false;
-                foreach (var unlocked in unlockedResearch)
+                inputPortPositions = new Vector3[inputPortCount];
+                
+                // Default input ports to left side of machine
+                for (int i = 0; i < inputPortCount; i++)
                 {
-                    if (unlocked == required)
+                    float yOffset = inputPortCount > 1 ? (i - (inputPortCount - 1) * 0.5f) * 0.5f : 0f;
+                    inputPortPositions[i] = new Vector3(-0.5f, 0.5f, yOffset);
+                }
+            }
+            
+            // Initialize output port positions if needed
+            if (outputPortPositions == null || outputPortPositions.Length != outputPortCount)
+            {
+                outputPortPositions = new Vector3[outputPortCount];
+                
+                // Default output ports to right side of machine
+                for (int i = 0; i < outputPortCount; i++)
+                {
+                    float yOffset = outputPortCount > 1 ? (i - (outputPortCount - 1) * 0.5f) * 0.5f : 0f;
+                    outputPortPositions[i] = new Vector3(0.5f, 0.5f, yOffset);
+                }
+            }
+            
+            // Validate machine name
+            if (string.IsNullOrEmpty(machineName))
+            {
+                Debug.LogWarning($"MachineData '{name}' has no machine name set");
+            }
+            
+            // Validate grid size
+            if (gridSize.x <= 0 || gridSize.y <= 0)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has invalid grid size. Setting to 1x1");
+                gridSize = new Vector2Int(1, 1);
+            }
+            
+            // Validate tier
+            if (tier < 1)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has tier < 1. Setting to 1");
+                tier = 1;
+            }
+            
+            // Validate processing speed
+            if (baseProcessingSpeed <= 0)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has processing speed <= 0. Setting to 1.0");
+                baseProcessingSpeed = 1f;
+            }
+            
+            // Validate power consumption
+            if (basePowerConsumption < 0)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has negative power consumption. Setting to 0");
+                basePowerConsumption = 0f;
+            }
+            
+            // Validate buffer capacity
+            if (bufferCapacity < 1)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has buffer capacity < 1. Setting to 10");
+                bufferCapacity = 10;
+            }
+            
+            // Validate prefab
+            if (prefab == null)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has no prefab assigned");
+            }
+            
+            // Validate recipes
+            if (availableRecipes != null)
+            {
+                for (int i = availableRecipes.Count - 1; i >= 0; i--)
+                {
+                    if (availableRecipes[i] == null)
                     {
-                        found = true;
-                        break;
+                        Debug.LogWarning($"MachineData '{machineName}' has null recipe at index {i}. Removing.");
+                        availableRecipes.RemoveAt(i);
                     }
                 }
-
-                if (!found)
-                    return false; // Missing a required research
             }
-
-            return true; // All requirements met
-        }
-
-        /// <summary>
-        /// Returns a string representation of this machine.
-        /// </summary>
-        public override string ToString()
-        {
-            return $"{displayName} ({machineId})";
+            
+            // Warn if machine has no ports
+            if (inputPortCount == 0 && outputPortCount == 0)
+            {
+                Debug.LogWarning($"MachineData '{machineName}' has no input or output ports. This may be intentional for utility machines.");
+            }
         }
     }
 }

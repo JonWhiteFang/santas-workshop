@@ -4,20 +4,26 @@ This document outlines the implementation tasks for the Machine Framework system
 
 ## Task List
 
-- [ ] 1. Create core data structures and enums
+- [x] 1. Create core data structures and enums
+
+
   - Create MachineState enum with all six states
   - Create IPowerConsumer interface with PowerConsumption, IsPowered properties and SetPowered method
   - Create ResourceStack struct if not already present from Resource System
   - _Requirements: 1, 2, 5_
 
-- [ ] 2. Implement Recipe ScriptableObject
+- [x] 2. Implement Recipe ScriptableObject
+
+
   - Create Recipe class inheriting from ScriptableObject
   - Add fields for recipeId, recipeName, inputs, outputs, processingTime, powerConsumption, requiredTier
   - Implement OnValidate method to check for empty inputs/outputs
   - Create CreateAssetMenu attribute for designer workflow
   - _Requirements: 4, 14_
 
-- [ ] 3. Implement MachineData ScriptableObject
+- [x] 3. Implement MachineData ScriptableObject
+
+
   - Create MachineData class inheriting from ScriptableObject
   - Add fields for machineName, description, icon, gridSize, tier, baseProcessingSpeed, basePowerConsumption
   - Add port configuration fields (inputPortCount, outputPortCount, port positions, bufferCapacity)
@@ -25,7 +31,9 @@ This document outlines the implementation tasks for the Machine Framework system
   - Implement OnValidate to initialize port position arrays
   - _Requirements: 14, 16_
 
-- [ ] 4. Implement InputPort class
+- [x] 4. Implement InputPort class
+
+
   - Create InputPort class with portId, localPosition, capacity fields
   - Implement buffer storage using Dictionary<string, int>
   - Add CanAcceptResource method checking capacity
@@ -35,7 +43,10 @@ This document outlines the implementation tasks for the Machine Framework system
   - Implement GetSaveData and LoadSaveData methods
   - _Requirements: 3, 6, 15_
 
-- [ ] 5. Implement OutputPort class
+- [x] 5. Implement OutputPort class
+
+
+
   - Create OutputPort class with portId, localPosition, capacity fields
   - Implement buffer storage using Dictionary<string, int>
   - Add CanAddResource method checking capacity
