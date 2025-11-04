@@ -32,7 +32,10 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Place in SantasWorkshop.Data namespace
   - _Requirements: 1.1, 1.4, 1.5_
 
-- [ ] 3. Create ResourceManager singleton class structure
+- [x] 3. Create ResourceManager singleton class structure
+
+
+
   - Create ResourceManager class inheriting from MonoBehaviour
   - Implement singleton pattern with Instance property and Awake() lifecycle
   - Add DontDestroyOnLoad() to persist across scenes
@@ -42,7 +45,9 @@ This implementation plan breaks down the Resource System into discrete, manageab
   - Place in SantasWorkshop.Core namespace
   - _Requirements: 2.1, 2.2, 2.4, 2.5_
 
-- [ ] 4. Implement resource database initialization
+- [-] 4. Implement resource database initialization
+
+
   - Create Initialize() method that loads ResourceData assets from Resources/ResourceDefinitions folder
   - Use Resources.LoadAll<ResourceData>() to find all resource definitions
   - Register each ResourceData in _resourceDatabase dictionary indexed by resourceId

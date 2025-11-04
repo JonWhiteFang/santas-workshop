@@ -3,6 +3,20 @@ using UnityEngine;
 namespace SantasWorkshop.Data
 {
     /// <summary>
+    /// Categories for classifying resources in the game.
+    /// </summary>
+    public enum ResourceCategory
+    {
+        RawMaterial,    // Wood, Iron Ore, Coal
+        Refined,        // Planks, Iron Ingots, Steel
+        Component,      // Gears, Circuits, Paint
+        ToyPart,        // Wheels, Arms, Bodies
+        FinishedToy,    // Complete toys
+        Magic,          // Magic Dust, Enchantments
+        Energy          // Coal, Magic Crystals (for power)
+    }
+
+    /// <summary>
     /// ScriptableObject that defines a resource type in the game.
     /// Resources can be raw materials, refined goods, components, toys, or magical items.
     /// </summary>
