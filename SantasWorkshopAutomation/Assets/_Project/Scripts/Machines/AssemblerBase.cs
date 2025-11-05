@@ -19,7 +19,7 @@ namespace SantasWorkshop.Machines
 
         #region Protected Fields
 
-        protected RecipeData currentRecipe;
+        protected Recipe currentRecipe;
         protected Dictionary<string, int> inputInventory;
         protected float assemblyProgress;
         protected bool hasRequiredInputs;
@@ -31,7 +31,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Gets the current recipe being assembled.
         /// </summary>
-        public RecipeData CurrentRecipe => currentRecipe;
+        public Recipe CurrentRecipe => currentRecipe;
 
         /// <summary>
         /// Gets whether the assembler has a recipe set.
@@ -74,48 +74,6 @@ namespace SantasWorkshop.Machines
             inputInventory = new Dictionary<string, int>();
         }
 
-        public override void Initialize(MachineData data)
-        {
-            base.Initialize(data);
-            assemblyProgress = 0f;
-            hasRequiredInputs = false;
-        }
-
-        #endregion
-
-        #region Machine Logic
-
-        public override void Tick(float deltaTime)
-        {
-            if (!isPowered || currentRecipe == null)
-            {
-                if (currentState == MachineState.Working)
-                {
-                    SetState(MachineState.Idle);
-                }
-                return;
-            }
-
-            // Check if we have required inputs
-            CheckRequiredInputs();
-
-            if (!hasRequiredInputs)
-            {
-                SetState(MachineState.Blocked);
-                return;
-            }
-
-            // Assemble product
-            SetState(MachineState.Working);
-            assemblyProgress += deltaTime / currentRecipe.processingTime;
-
-            if (assemblyProgress >= 1f)
-            {
-                assemblyProgress = 0f;
-                CompleteAssembly();
-            }
-        }
-
         #endregion
 
         #region Recipe Management
@@ -123,16 +81,14 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Sets the current recipe for this assembler.
         /// </summary>
-        public virtual void SetRecipe(RecipeData recipe)
+        public virtual void SetRecipe(Recipe recipe)
         {
             currentRecipe = recipe;
             assemblyProgress = 0f;
             hasRequiredInputs = false;
+            SetActiveRecipe(recipe);
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[AssemblerBase] {MachineId} recipe set: {recipe?.recipeId ?? "none"}");
-            }
+            Debug.Log($"[AssemblerBase] {MachineId} recipe set: {recipe?.recipeId ?? "none"}");
         }
 
         /// <summary>
@@ -167,15 +123,12 @@ namespace SantasWorkshop.Machines
                 return;
 
             // Consume inputs
-            ConsumeInputs();
+            ConsumeInputsFromInventory();
 
             // Produce output
             ProduceOutput();
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[AssemblerBase] {MachineId} completed assembly: {currentRecipe.recipeId}");
-            }
+            Debug.Log($"[AssemblerBase] {MachineId} completed assembly: {currentRecipe.recipeId}");
 
             // Check if we can continue assembling
             CheckRequiredInputs();
@@ -184,7 +137,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Consumes the required inputs from the inventory.
         /// </summary>
-        protected virtual void ConsumeInputs()
+        protected virtual void ConsumeInputsFromInventory()
         {
             if (currentRecipe == null || currentRecipe.inputs == null)
                 return;
@@ -213,12 +166,9 @@ namespace SantasWorkshop.Machines
                 return;
 
             // TODO: Implement output delivery to logistics system or ResourceManager
-            if (showDebugInfo)
+            foreach (var output in currentRecipe.outputs)
             {
-                foreach (var output in currentRecipe.outputs)
-                {
-                    Debug.Log($"[AssemblerBase] {MachineId} produced: {output.resourceId} x{output.amount}");
-                }
+                Debug.Log($"[AssemblerBase] {MachineId} produced: {output.resourceId} x{output.amount}");
             }
         }
 
@@ -243,10 +193,7 @@ namespace SantasWorkshop.Machines
                 inputInventory[resourceId] = amount;
             }
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[AssemblerBase] {MachineId} added to inventory: {resourceId} x{amount}");
-            }
+            Debug.Log($"[AssemblerBase] {MachineId} added to inventory: {resourceId} x{amount}");
 
             return true;
         }
@@ -267,10 +214,7 @@ namespace SantasWorkshop.Machines
             inputInventory.Clear();
             hasRequiredInputs = false;
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[AssemblerBase] {MachineId} inventory cleared");
-            }
+            Debug.Log($"[AssemblerBase] {MachineId} inventory cleared");
         }
 
         #endregion

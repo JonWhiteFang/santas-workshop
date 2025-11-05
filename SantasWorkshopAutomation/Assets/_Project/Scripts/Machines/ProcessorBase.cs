@@ -20,10 +20,9 @@ namespace SantasWorkshop.Machines
 
         #region Protected Fields
 
-        protected RecipeData currentRecipe;
+        protected Recipe currentRecipe;
         protected Queue<ResourceStack> inputBuffer;
         protected Queue<ResourceStack> outputBuffer;
-        protected float processingProgress;
 
         #endregion
 
@@ -32,17 +31,12 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Gets the current recipe being processed.
         /// </summary>
-        public RecipeData CurrentRecipe => currentRecipe;
+        public Recipe CurrentRecipe => currentRecipe;
 
         /// <summary>
         /// Gets whether the processor has a recipe set.
         /// </summary>
         public bool HasRecipe => currentRecipe != null;
-
-        /// <summary>
-        /// Gets the current processing progress (0-1).
-        /// </summary>
-        public float ProcessingProgress => processingProgress;
 
         /// <summary>
         /// Gets whether the input buffer has space.
@@ -65,45 +59,6 @@ namespace SantasWorkshop.Machines
             outputBuffer = new Queue<ResourceStack>(outputBufferSize);
         }
 
-        public override void Initialize(MachineData data)
-        {
-            base.Initialize(data);
-            processingProgress = 0f;
-        }
-
-        #endregion
-
-        #region Machine Logic
-
-        public override void Tick(float deltaTime)
-        {
-            if (!isPowered || currentRecipe == null)
-            {
-                if (currentState == MachineState.Working)
-                {
-                    SetState(MachineState.Idle);
-                }
-                return;
-            }
-
-            // Check if we can process
-            if (!CanProcess())
-            {
-                SetState(MachineState.Blocked);
-                return;
-            }
-
-            // Process recipe
-            SetState(MachineState.Working);
-            processingProgress += deltaTime / currentRecipe.processingTime;
-
-            if (processingProgress >= 1f)
-            {
-                processingProgress = 0f;
-                CompleteProcessing();
-            }
-        }
-
         #endregion
 
         #region Recipe Management
@@ -111,15 +66,12 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Sets the current recipe for this processor.
         /// </summary>
-        public virtual void SetRecipe(RecipeData recipe)
+        public virtual void SetRecipe(Recipe recipe)
         {
             currentRecipe = recipe;
-            processingProgress = 0f;
+            SetActiveRecipe(recipe);
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ProcessorBase] {MachineId} recipe set: {recipe?.recipeId ?? "none"}");
-            }
+            Debug.Log($"[ProcessorBase] {MachineId} recipe set: {recipe?.recipeId ?? "none"}");
         }
 
         /// <summary>
@@ -131,7 +83,7 @@ namespace SantasWorkshop.Machines
                 return false;
 
             // Check if we have required inputs
-            if (!HasRequiredInputs())
+            if (!HasRequiredInputsInBuffer())
                 return false;
 
             // Check if output buffer has space
@@ -144,7 +96,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Checks if the input buffer contains all required inputs for the current recipe.
         /// </summary>
-        protected virtual bool HasRequiredInputs()
+        protected virtual bool HasRequiredInputsInBuffer()
         {
             // TODO: Implement proper input checking when ResourceStack is fully implemented
             return inputBuffer.Count > 0;
@@ -153,27 +105,24 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Completes the current processing cycle and produces outputs.
         /// </summary>
-        protected virtual void CompleteProcessing()
+        protected new virtual void CompleteProcessing()
         {
             if (currentRecipe == null)
                 return;
 
             // Consume inputs
-            ConsumeInputs();
+            ConsumeInputsFromBuffer();
 
             // Produce outputs
-            ProduceOutputs();
+            ProduceOutputsToBuffer();
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ProcessorBase] {MachineId} completed processing: {currentRecipe.recipeId}");
-            }
+            Debug.Log($"[ProcessorBase] {MachineId} completed processing: {currentRecipe.recipeId}");
         }
 
         /// <summary>
         /// Consumes the required inputs from the input buffer.
         /// </summary>
-        protected virtual void ConsumeInputs()
+        protected virtual void ConsumeInputsFromBuffer()
         {
             // TODO: Implement proper input consumption when ResourceStack is fully implemented
             if (inputBuffer.Count > 0)
@@ -185,7 +134,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Produces the recipe outputs and adds them to the output buffer.
         /// </summary>
-        protected virtual void ProduceOutputs()
+        protected virtual void ProduceOutputsToBuffer()
         {
             if (currentRecipe == null || currentRecipe.outputs == null)
                 return;

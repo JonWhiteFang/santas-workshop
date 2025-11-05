@@ -7,13 +7,6 @@ namespace SantasWorkshop.Machines.Examples
     /// Example implementation of a smelter that processes ore into ingots.
     /// This demonstrates proper inheritance from ProcessorBase.
     /// </summary>
-    /// <remarks>
-    /// Key Features:
-    /// - Processes recipes with input/output buffers
-    /// - Visual feedback (fire effects, furnace glow)
-    /// - Recipe switching support
-    /// - Automatic state management
-    /// </remarks>
     public class ExampleSmelter : ProcessorBase
     {
         #region Serialized Fields
@@ -24,9 +17,6 @@ namespace SantasWorkshop.Machines.Examples
 
         [Tooltip("Light component for furnace glow")]
         [SerializeField] private Light furnaceLight;
-
-        [Tooltip("Material for hot metal glow")]
-        [SerializeField] private Material glowMaterial;
 
         [Header("Audio")]
         [Tooltip("Sound played when smelting completes")]
@@ -40,20 +30,14 @@ namespace SantasWorkshop.Machines.Examples
         #region Private Fields
 
         private AudioSource audioSource;
-        private float glowIntensity;
-        private Renderer furnaceRenderer;
 
         #endregion
 
         #region Initialization
 
-        /// <summary>
-        /// Initialize the smelter with configuration data.
-        /// </summary>
-        public override void Initialize(MachineData data)
+        protected override void Awake()
         {
-            // IMPORTANT: Always call base.Initialize() first
-            base.Initialize(data);
+            base.Awake();
 
             // Cache components
             audioSource = GetComponent<AudioSource>();
@@ -61,23 +45,18 @@ namespace SantasWorkshop.Machines.Examples
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
+        }
 
-            furnaceRenderer = GetComponentInChildren<Renderer>();
+        protected override void Start()
+        {
+            base.Start();
 
             // Set default recipe if available
-            if (data.availableRecipes != null && data.availableRecipes.Length > 0)
+            if (machineData != null && machineData.availableRecipes != null && machineData.availableRecipes.Count > 0)
             {
-                SetRecipe(data.availableRecipes[0]);
-
-                if (showDebugInfo)
-                {
-                    Debug.Log($"[ExampleSmelter] {MachineId} default recipe: {data.availableRecipes[0].recipeName}");
-                }
+                SetRecipe(machineData.availableRecipes[0]);
+                Debug.Log($"[ExampleSmelter] {MachineId} default recipe: {machineData.availableRecipes[0].recipeName}");
             }
-
-            // Initialize visual state
-            glowIntensity = 0f;
-            UpdateVisuals();
         }
 
         #endregion
@@ -86,20 +65,15 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Called when processing completes.
-        /// Override to add custom completion logic.
         /// </summary>
         protected override void CompleteProcessing()
         {
-            // IMPORTANT: Call base method to handle resource consumption/production
             base.CompleteProcessing();
 
             // Play completion effects
             PlayCompletionEffects();
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleSmelter] {MachineId} completed: {currentRecipe?.recipeName ?? "unknown"}");
-            }
+            Debug.Log($"[ExampleSmelter] {MachineId} completed: {currentRecipe?.recipeName ?? "unknown"}");
         }
 
         /// <summary>
@@ -144,12 +118,9 @@ namespace SantasWorkshop.Machines.Examples
         /// <summary>
         /// Update visual elements based on machine state.
         /// </summary>
-        protected override void UpdateVisuals()
+        private void UpdateVisualEffects()
         {
-            // IMPORTANT: Call base method
-            base.UpdateVisuals();
-
-            bool isWorking = currentState == MachineState.Working && isPowered;
+            bool isWorking = CurrentState == MachineState.Processing && IsPowered;
 
             // Update fire effect
             if (fireEffect != null)
@@ -176,21 +147,6 @@ namespace SantasWorkshop.Machines.Examples
                 {
                     float pulse = Mathf.Sin(Time.time * 2f) * 0.2f + 0.8f;
                     furnaceLight.intensity = 2f * pulse;
-                }
-            }
-
-            // Update glow material
-            if (furnaceRenderer != null && glowMaterial != null)
-            {
-                // Smoothly transition glow intensity
-                float targetGlow = isWorking ? 1f : 0f;
-                glowIntensity = Mathf.Lerp(glowIntensity, targetGlow, Time.deltaTime * 2f);
-
-                // Apply glow to material
-                if (glowMaterial.HasProperty("_EmissionColor"))
-                {
-                    Color emissionColor = Color.red * glowIntensity * 2f;
-                    glowMaterial.SetColor("_EmissionColor", emissionColor);
                 }
             }
 
@@ -224,79 +180,6 @@ namespace SantasWorkshop.Machines.Examples
             }
         }
 
-        /// <summary>
-        /// Handle state changes.
-        /// </summary>
-        protected override void OnStateChanged(MachineState oldState, MachineState newState)
-        {
-            // IMPORTANT: Call base method
-            base.OnStateChanged(oldState, newState);
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleSmelter] {MachineId} state: {oldState} → {newState}");
-            }
-
-            // Update visuals immediately on state change
-            UpdateVisuals();
-        }
-
-        /// <summary>
-        /// Handle power status changes.
-        /// </summary>
-        protected override void OnPowerStatusChanged(bool powered)
-        {
-            // IMPORTANT: Call base method
-            base.OnPowerStatusChanged(powered);
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleSmelter] {MachineId} power: {powered}");
-            }
-
-            // Update visuals immediately on power change
-            UpdateVisuals();
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Sets the active recipe for this smelter.
-        /// Validates that the recipe is available for this machine.
-        /// </summary>
-        public override void SetRecipe(RecipeData recipe)
-        {
-            // Validate recipe is available
-            if (machineData != null && machineData.availableRecipes != null)
-            {
-                bool isAvailable = false;
-                foreach (var availableRecipe in machineData.availableRecipes)
-                {
-                    if (availableRecipe == recipe)
-                    {
-                        isAvailable = true;
-                        break;
-                    }
-                }
-
-                if (!isAvailable)
-                {
-                    Debug.LogWarning($"[ExampleSmelter] {MachineId} recipe not available: {recipe?.recipeName ?? "null"}");
-                    return;
-                }
-            }
-
-            // IMPORTANT: Call base method to set recipe
-            base.SetRecipe(recipe);
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleSmelter] {MachineId} recipe changed: {recipe?.recipeName ?? "none"}");
-            }
-        }
-
         #endregion
 
         #region Unity Lifecycle
@@ -304,12 +187,14 @@ namespace SantasWorkshop.Machines.Examples
         /// <summary>
         /// Update is called once per frame.
         /// </summary>
-        private void Update()
+        private new void Update()
         {
+            base.Update();
+            
             // Update visuals every frame for smooth animations
-            if (currentState == MachineState.Working)
+            if (CurrentState == MachineState.Processing)
             {
-                UpdateVisuals();
+                UpdateVisualEffects();
             }
         }
 
@@ -329,7 +214,6 @@ namespace SantasWorkshop.Machines.Examples
                 audioSource.Stop();
             }
 
-            // IMPORTANT: Call base method last
             base.OnDestroy();
         }
 

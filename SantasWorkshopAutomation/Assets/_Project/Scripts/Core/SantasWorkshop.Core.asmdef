@@ -3,7 +3,8 @@
     "rootNamespace": "SantasWorkshop.Core",
     "references": [
         "SantasWorkshop.Data",
-        "SantasWorkshop.Utilities"
+        "SantasWorkshop.Utilities",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

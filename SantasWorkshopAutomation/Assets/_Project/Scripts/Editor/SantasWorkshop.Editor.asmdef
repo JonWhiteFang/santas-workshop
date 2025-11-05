@@ -3,7 +3,8 @@
     "rootNamespace": "SantasWorkshop.Editor",
     "references": [
         "SantasWorkshop.Core",
-        "SantasWorkshop.Data"
+        "SantasWorkshop.Data",
+        "SantasWorkshop.Utilities"
     ],
     "includePlatforms": [
         "Editor"

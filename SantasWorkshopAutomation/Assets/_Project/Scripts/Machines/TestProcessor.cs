@@ -33,7 +33,7 @@ namespace SantasWorkshop.Machines
                 
                 if (verboseLogging)
                 {
-                    Debug.Log($"TestProcessor {machineId} auto-selected recipe: {activeRecipe?.recipeId}");
+                    Debug.Log($"TestProcessor {machineId} auto-selected recipe: {machineData.availableRecipes[0]?.recipeId}");
                 }
             }
         }
@@ -68,7 +68,7 @@ namespace SantasWorkshop.Machines
             
             if (verboseLogging)
             {
-                Debug.Log($"TestProcessor {machineId} entered Processing state. Recipe: {activeRecipe?.recipeId}");
+                Debug.Log($"TestProcessor {machineId} entered Processing state");
             }
         }
         
@@ -136,27 +136,9 @@ namespace SantasWorkshop.Machines
         
         protected override void CompleteProcessing()
         {
-            if (verboseLogging && activeRecipe != null)
+            if (verboseLogging)
             {
-                Debug.Log($"TestProcessor {machineId} completing recipe: {activeRecipe.recipeId}");
-                
-                // Log inputs consumed
-                if (activeRecipe.inputs != null)
-                {
-                    foreach (var input in activeRecipe.inputs)
-                    {
-                        Debug.Log($"  Consuming: {input.amount}x {input.resourceId}");
-                    }
-                }
-                
-                // Log outputs produced
-                if (activeRecipe.outputs != null)
-                {
-                    foreach (var output in activeRecipe.outputs)
-                    {
-                        Debug.Log($"  Producing: {output.amount}x {output.resourceId}");
-                    }
-                }
+                Debug.Log($"TestProcessor {machineId} completing recipe processing");
             }
             
             base.CompleteProcessing();
@@ -284,7 +266,7 @@ namespace SantasWorkshop.Machines
         /// </summary>
         public void ForceCheckProcessing()
         {
-            if (currentState == MachineState.Idle || currentState == MachineState.WaitingForInput)
+            if (CurrentState == MachineState.Idle || CurrentState == MachineState.WaitingForInput)
             {
                 UpdateIdle();
             }
@@ -321,8 +303,7 @@ namespace SantasWorkshop.Machines
         
         public override string ToString()
         {
-            string recipeInfo = activeRecipe != null ? activeRecipe.recipeId : "none";
-            return $"TestProcessor[{machineId}] State:{currentState} Recipe:{recipeInfo} Progress:{processingProgress:P0} Powered:{isPowered}";
+            return $"TestProcessor[{machineId}] State:{CurrentState} Progress:{ProcessingProgress:P0} Powered:{IsPowered}";
         }
         
         #endregion

@@ -47,10 +47,8 @@ namespace SantasWorkshop.Machines
         
         protected override void Update()
         {
-            if (!isEnabled) return;
-            
             // Update extraction timer
-            if (currentState == MachineState.Processing)
+            if (CurrentState == MachineState.Processing)
             {
                 _timeSinceLastExtraction += Time.deltaTime;
                 
@@ -86,7 +84,7 @@ namespace SantasWorkshop.Machines
         {
             // Extractors don't need recipes, they just extract
             // Check if we have power and output space
-            if (isPowered && CanAddToOutputBuffer(extractedResourceId, extractionAmount))
+            if (IsPowered && CanAddToOutputBuffer(extractedResourceId, extractionAmount))
             {
                 TransitionToState(MachineState.Processing);
             }
@@ -95,7 +93,7 @@ namespace SantasWorkshop.Machines
         protected override void UpdateProcessing()
         {
             // Check if we still have power and output space
-            if (!isPowered)
+            if (!IsPowered)
             {
                 // Power loss is handled by SetPowered
                 return;
@@ -233,7 +231,7 @@ namespace SantasWorkshop.Machines
         
         public override string ToString()
         {
-            return $"TestExtractor[{machineId}] State:{currentState} Resource:{extractedResourceId} Amount:{extractionAmount} Powered:{isPowered}";
+            return $"TestExtractor[{machineId}] State:{CurrentState} Resource:{extractedResourceId} Amount:{extractionAmount} Powered:{IsPowered}";
         }
         
         #endregion

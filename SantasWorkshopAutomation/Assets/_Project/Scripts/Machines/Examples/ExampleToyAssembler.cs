@@ -8,13 +8,6 @@ namespace SantasWorkshop.Machines.Examples
     /// Example implementation of a toy assembler that combines multiple components.
     /// This demonstrates proper inheritance from AssemblerBase.
     /// </summary>
-    /// <remarks>
-    /// Key Features:
-    /// - Combines multiple input resources
-    /// - Inventory-based resource management
-    /// - Visual assembly animation
-    /// - Toy spawning at completion
-    /// </remarks>
     public class ExampleToyAssembler : AssemblerBase
     {
         #region Serialized Fields
@@ -51,18 +44,13 @@ namespace SantasWorkshop.Machines.Examples
 
         #region Initialization
 
-        /// <summary>
-        /// Initialize the toy assembler with configuration data.
-        /// </summary>
-        public override void Initialize(MachineData data)
+        protected override void Awake()
         {
-            // IMPORTANT: Always call base.Initialize() first
-            base.Initialize(data);
+            base.Awake();
 
             // Initialize assembly point
             if (assemblyPoint == null)
             {
-                // Create assembly point if not assigned
                 GameObject assemblyPointObj = new GameObject("AssemblyPoint");
                 assemblyPointObj.transform.SetParent(transform);
                 assemblyPointObj.transform.localPosition = Vector3.up * 1.5f;
@@ -78,16 +66,17 @@ namespace SantasWorkshop.Machines.Examples
 
             // Initialize component visuals dictionary
             componentVisuals = new Dictionary<string, GameObject>();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
 
             // Set default recipe if available
-            if (data.availableRecipes != null && data.availableRecipes.Length > 0)
+            if (machineData != null && machineData.availableRecipes != null && machineData.availableRecipes.Count > 0)
             {
-                SetRecipe(data.availableRecipes[0]);
-
-                if (showDebugInfo)
-                {
-                    Debug.Log($"[ExampleToyAssembler] {MachineId} default recipe: {data.availableRecipes[0].recipeName}");
-                }
+                SetRecipe(machineData.availableRecipes[0]);
+                Debug.Log($"[ExampleToyAssembler] {MachineId} default recipe: {machineData.availableRecipes[0].recipeName}");
             }
         }
 
@@ -97,11 +86,9 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Called when assembly completes.
-        /// Override to add custom completion logic.
         /// </summary>
         protected override void CompleteAssembly()
         {
-            // IMPORTANT: Call base method to handle resource consumption
             base.CompleteAssembly();
 
             // Spawn toy visual
@@ -116,10 +103,7 @@ namespace SantasWorkshop.Machines.Examples
             // Play completion effects
             PlayCompletionEffects();
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleToyAssembler] {MachineId} completed: {currentRecipe?.recipeName ?? "unknown"}");
-            }
+            Debug.Log($"[ExampleToyAssembler] {MachineId} completed: {currentRecipe?.recipeName ?? "unknown"}");
         }
 
         /// <summary>
@@ -127,9 +111,6 @@ namespace SantasWorkshop.Machines.Examples
         /// </summary>
         private void SpawnToyVisual(string toyId, Vector3 position)
         {
-            // TODO: Load toy prefab from resources or database
-            // For now, create a simple placeholder
-
             GameObject toy = GameObject.CreatePrimitive(PrimitiveType.Cube);
             toy.name = $"Toy_{toyId}";
             toy.transform.position = position;
@@ -142,17 +123,14 @@ namespace SantasWorkshop.Machines.Examples
                 renderer.material.color = Random.ColorHSV();
             }
 
-            // Add physics for fun
+            // Add physics
             Rigidbody rb = toy.AddComponent<Rigidbody>();
             rb.mass = 0.1f;
 
-            // Destroy after a few seconds (in real game, this would go to logistics)
+            // Destroy after a few seconds
             Destroy(toy, 5f);
 
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleToyAssembler] {MachineId} spawned toy: {toyId}");
-            }
+            Debug.Log($"[ExampleToyAssembler] {MachineId} spawned toy: {toyId}");
         }
 
         /// <summary>
@@ -180,12 +158,9 @@ namespace SantasWorkshop.Machines.Examples
         /// <summary>
         /// Update visual elements based on machine state.
         /// </summary>
-        protected override void UpdateVisuals()
+        private void UpdateVisualEffects()
         {
-            // IMPORTANT: Call base method
-            base.UpdateVisuals();
-
-            bool isWorking = currentState == MachineState.Working && isPowered;
+            bool isWorking = CurrentState == MachineState.Processing && IsPowered;
 
             // Update assembly arm animation
             if (assemblyArmAnimator != null)
@@ -194,8 +169,7 @@ namespace SantasWorkshop.Machines.Examples
 
                 if (isWorking)
                 {
-                    // Set animation progress based on assembly progress
-                    assemblyArmAnimator.SetFloat("AssemblyProgress", assemblyProgress);
+                    assemblyArmAnimator.SetFloat("AssemblyProgress", AssemblyProgress);
                     assemblyArmAnimator.speed = assemblyAnimationSpeed;
                 }
                 else
@@ -221,9 +195,6 @@ namespace SantasWorkshop.Machines.Examples
 
             // Update audio
             UpdateAudio(isWorking);
-
-            // Update component visuals
-            UpdateComponentVisuals();
         }
 
         /// <summary>
@@ -252,88 +223,22 @@ namespace SantasWorkshop.Machines.Examples
             }
         }
 
-        /// <summary>
-        /// Updates visual representations of components in inventory.
-        /// </summary>
-        private void UpdateComponentVisuals()
-        {
-            // TODO: Show visual indicators for components in inventory
-            // This could display small icons or models around the machine
-
-            if (showDebugInfo && currentRecipe != null)
-            {
-                // Log inventory status
-                foreach (var input in currentRecipe.inputs)
-                {
-                    int amount = GetInventoryAmount(input.resourceId);
-                    if (amount > 0)
-                    {
-                        // Component is in inventory
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handle state changes.
-        /// </summary>
-        protected override void OnStateChanged(MachineState oldState, MachineState newState)
-        {
-            // IMPORTANT: Call base method
-            base.OnStateChanged(oldState, newState);
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleToyAssembler] {MachineId} state: {oldState} → {newState}");
-            }
-
-            // Update visuals immediately on state change
-            UpdateVisuals();
-        }
-
-        /// <summary>
-        /// Handle power status changes.
-        /// </summary>
-        protected override void OnPowerStatusChanged(bool powered)
-        {
-            // IMPORTANT: Call base method
-            base.OnPowerStatusChanged(powered);
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleToyAssembler] {MachineId} power: {powered}");
-            }
-
-            // Update visuals immediately on power change
-            UpdateVisuals();
-        }
-
         #endregion
 
         #region Inventory Management
 
         /// <summary>
         /// Adds a resource to the inventory.
-        /// Override to add custom logic and events.
         /// </summary>
         public override bool AddToInventory(string resourceId, int amount)
         {
-            // IMPORTANT: Call base method to add to inventory
             bool success = base.AddToInventory(resourceId, amount);
 
             if (success)
             {
-                // Trigger custom event or visual update
                 OnInventoryChanged?.Invoke();
-
-                if (showDebugInfo)
-                {
-                    Debug.Log($"[ExampleToyAssembler] {MachineId} added: {resourceId} x{amount}");
-                    Debug.Log($"[ExampleToyAssembler] {MachineId} inventory: {InventoryCount}/{maxInventorySlots}");
-                }
-
-                // Update component visuals
-                UpdateComponentVisuals();
+                Debug.Log($"[ExampleToyAssembler] {MachineId} added: {resourceId} x{amount}");
+                Debug.Log($"[ExampleToyAssembler] {MachineId} inventory: {InventoryCount}/{maxInventorySlots}");
             }
 
             return success;
@@ -341,11 +246,9 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Clears all items from the inventory.
-        /// Override to add custom cleanup logic.
         /// </summary>
         public override void ClearInventory()
         {
-            // IMPORTANT: Call base method to clear inventory
             base.ClearInventory();
 
             // Clear component visuals
@@ -358,18 +261,12 @@ namespace SantasWorkshop.Machines.Examples
             }
             componentVisuals.Clear();
 
-            // Trigger event
             OnInventoryChanged?.Invoke();
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleToyAssembler] {MachineId} inventory cleared");
-            }
+            Debug.Log($"[ExampleToyAssembler] {MachineId} inventory cleared");
         }
 
         /// <summary>
         /// Event fired when inventory changes.
-        /// Subscribe to this to update UI or other systems.
         /// </summary>
         public event System.Action OnInventoryChanged;
 
@@ -379,7 +276,6 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Gets a summary of the current inventory state.
-        /// Useful for UI display.
         /// </summary>
         public string GetInventorySummary()
         {
@@ -406,12 +302,14 @@ namespace SantasWorkshop.Machines.Examples
         /// <summary>
         /// Update is called once per frame.
         /// </summary>
-        private void Update()
+        private new void Update()
         {
+            base.Update();
+            
             // Update visuals every frame for smooth animations
-            if (currentState == MachineState.Working)
+            if (CurrentState == MachineState.Processing)
             {
-                UpdateVisuals();
+                UpdateVisualEffects();
             }
         }
 
@@ -441,28 +339,7 @@ namespace SantasWorkshop.Machines.Examples
                 audioSource.Stop();
             }
 
-            // IMPORTANT: Call base method last
             base.OnDestroy();
-        }
-
-        #endregion
-
-        #region Debug
-
-        /// <summary>
-        /// Draw debug information in editor.
-        /// </summary>
-        private void OnGUI()
-        {
-            if (!showDebugInfo || !Application.isPlaying)
-                return;
-
-            // Display inventory summary on screen
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position + Vector3.up * 3f);
-            if (screenPos.z > 0)
-            {
-                GUI.Label(new Rect(screenPos.x, Screen.height - screenPos.y, 300, 200), GetInventorySummary());
-            }
         }
 
         #endregion

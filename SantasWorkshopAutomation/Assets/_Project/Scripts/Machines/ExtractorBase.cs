@@ -40,9 +40,9 @@ namespace SantasWorkshop.Machines
 
         #region Initialization
 
-        public override void Initialize(MachineData data)
+        protected override void Start()
         {
-            base.Initialize(data);
+            base.Start();
             FindNearestResourceNode();
         }
 
@@ -50,25 +50,25 @@ namespace SantasWorkshop.Machines
 
         #region Machine Logic
 
-        public override void Tick(float deltaTime)
+        protected override void Update()
         {
-            if (!isPowered || targetNode == null)
+            base.Update();
+            
+            if (!IsPowered || targetNode == null)
             {
-                if (currentState == MachineState.Working)
-                {
-                    SetState(MachineState.Idle);
-                }
                 return;
             }
 
             // Perform extraction
-            SetState(MachineState.Working);
-            extractionProgress += extractionRate * deltaTime;
-
-            if (extractionProgress >= 1f)
+            if (CurrentState == MachineState.Processing)
             {
-                extractionProgress -= 1f;
-                OnResourceExtracted();
+                extractionProgress += extractionRate * Time.deltaTime;
+
+                if (extractionProgress >= 1f)
+                {
+                    extractionProgress -= 1f;
+                    OnResourceExtracted();
+                }
             }
         }
 
@@ -83,10 +83,7 @@ namespace SantasWorkshop.Machines
         {
             // TODO: Implement resource node detection
             // This will be implemented when the resource node system is created
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExtractorBase] {MachineId} searching for resource nodes...");
-            }
+            Debug.Log($"[ExtractorBase] {MachineId} searching for resource nodes...");
         }
 
         /// <summary>
@@ -95,10 +92,7 @@ namespace SantasWorkshop.Machines
         /// </summary>
         protected virtual void OnResourceExtracted()
         {
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExtractorBase] {MachineId} extracted resource");
-            }
+            Debug.Log($"[ExtractorBase] {MachineId} extracted resource");
 
             // TODO: Add resource to output buffer or ResourceManager
         }
@@ -109,33 +103,24 @@ namespace SantasWorkshop.Machines
         public virtual void SetTargetNode(ResourceNode node)
         {
             targetNode = node;
-
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExtractorBase] {MachineId} target node set: {node != null}");
-            }
+            Debug.Log($"[ExtractorBase] {MachineId} target node set: {node != null}");
         }
 
         #endregion
 
         #region Debug
 
-        protected override void OnDrawGizmos()
+        private void OnDrawGizmos()
         {
-            base.OnDrawGizmos();
+            // Draw extraction range
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, extractionRange);
 
-            if (showDebugInfo)
+            // Draw line to target node
+            if (targetNode != null && Application.isPlaying)
             {
-                // Draw extraction range
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawWireSphere(transform.position, extractionRange);
-
-                // Draw line to target node
-                if (targetNode != null && Application.isPlaying)
-                {
-                    Gizmos.color = Color.green;
-                    Gizmos.DrawLine(transform.position, targetNode.transform.position);
-                }
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(transform.position, targetNode.transform.position);
             }
         }
 

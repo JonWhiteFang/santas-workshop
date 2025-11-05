@@ -8,13 +8,6 @@ namespace SantasWorkshop.Machines.Examples
     /// Example implementation of a mining drill that extracts ore from resource nodes.
     /// This demonstrates proper inheritance from ExtractorBase.
     /// </summary>
-    /// <remarks>
-    /// Key Features:
-    /// - Extracts resources from nearby resource nodes
-    /// - Continuous production when powered
-    /// - Visual feedback (drill animation, particles)
-    /// - Automatic resource delivery to ResourceManager
-    /// </remarks>
     public class ExampleMiningDrill : ExtractorBase
     {
         #region Serialized Fields
@@ -46,14 +39,9 @@ namespace SantasWorkshop.Machines.Examples
 
         #region Initialization
 
-        /// <summary>
-        /// Initialize the mining drill with configuration data.
-        /// Always call base.Initialize() first!
-        /// </summary>
-        public override void Initialize(MachineData data)
+        protected override void Start()
         {
-            // IMPORTANT: Always call base.Initialize() first
-            base.Initialize(data);
+            base.Start();
 
             // Custom initialization
             isDrilling = false;
@@ -74,11 +62,7 @@ namespace SantasWorkshop.Machines.Examples
                 drillAudio = GetComponent<AudioSource>();
             }
 
-            // Log initialization (only when debug is enabled)
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleMiningDrill] {MachineId} initialized for {oreType}");
-            }
+            Debug.Log($"[ExampleMiningDrill] {MachineId} initialized for {oreType}");
         }
 
         #endregion
@@ -87,22 +71,16 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Called when a resource unit has been extracted.
-        /// Override to handle resource delivery.
         /// </summary>
         protected override void OnResourceExtracted()
         {
-            // IMPORTANT: Call base method to maintain functionality
             base.OnResourceExtracted();
 
             // Add ore to ResourceManager
             if (ResourceManager.Instance != null)
             {
-                ResourceManager.Instance.AddResource(oreType, orePerExtraction);
-
-                if (showDebugInfo)
-                {
-                    Debug.Log($"[ExampleMiningDrill] {MachineId} extracted {orePerExtraction}x {oreType}");
-                }
+                ResourceManager.Instance.AddResource(oreType.ToString(), orePerExtraction);
+                Debug.Log($"[ExampleMiningDrill] {MachineId} extracted {orePerExtraction}x {oreType}");
             }
             else
             {
@@ -137,15 +115,11 @@ namespace SantasWorkshop.Machines.Examples
 
         /// <summary>
         /// Update visual elements based on machine state.
-        /// Called automatically by base class.
         /// </summary>
-        protected override void UpdateVisuals()
+        private void UpdateVisualEffects()
         {
-            // IMPORTANT: Call base method first
-            base.UpdateVisuals();
-
             // Update drilling state
-            bool shouldDrill = currentState == MachineState.Working && isPowered;
+            bool shouldDrill = CurrentState == MachineState.Processing && IsPowered;
 
             if (shouldDrill != isDrilling)
             {
@@ -189,45 +163,18 @@ namespace SantasWorkshop.Machines.Examples
             }
         }
 
-        /// <summary>
-        /// Handle state changes for visual feedback.
-        /// </summary>
-        protected override void OnStateChanged(MachineState oldState, MachineState newState)
-        {
-            // IMPORTANT: Call base method
-            base.OnStateChanged(oldState, newState);
-
-            // Custom state change handling
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleMiningDrill] {MachineId} state: {oldState} → {newState}");
-            }
-
-            // Update visuals when state changes
-            UpdateVisuals();
-        }
-
-        /// <summary>
-        /// Handle power status changes.
-        /// </summary>
-        protected override void OnPowerStatusChanged(bool powered)
-        {
-            // IMPORTANT: Call base method
-            base.OnPowerStatusChanged(powered);
-
-            // Custom power change handling
-            if (showDebugInfo)
-            {
-                Debug.Log($"[ExampleMiningDrill] {MachineId} power: {powered}");
-            }
-
-            // Update visuals when power changes
-            UpdateVisuals();
-        }
-
         #endregion
 
         #region Unity Lifecycle
+
+        /// <summary>
+        /// Update is called once per frame.
+        /// </summary>
+        private new void Update()
+        {
+            base.Update();
+            UpdateVisualEffects();
+        }
 
         /// <summary>
         /// Clean up when destroyed.
@@ -245,7 +192,6 @@ namespace SantasWorkshop.Machines.Examples
                 drillAudio.Stop();
             }
 
-            // IMPORTANT: Call base method last
             base.OnDestroy();
         }
 
