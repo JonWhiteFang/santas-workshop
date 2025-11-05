@@ -219,7 +219,9 @@ This document outlines the implementation tasks for the Machine Framework system
   - Configure test setup for manual testing
   - _Requirements: All_
 
-- [ ] 24. Write unit tests for InputPort and OutputPort
+- [x] 24. Write unit tests for InputPort and OutputPort
+
+
   - Test AddResource with valid and invalid amounts
   - Test RemoveResource and ExtractResource
   - Test capacity limits
@@ -227,7 +229,9 @@ This document outlines the implementation tasks for the Machine Framework system
   - Test save/load functionality
   - _Requirements: 3, 6, 7_
 
-- [ ] 25. Write unit tests for MachineBase state machine
+- [x] 25. Write unit tests for MachineBase state machine
+
+
   - Test TransitionToState changes state correctly
   - Test OnStateChanged event fires
   - Test state transition validation
@@ -235,7 +239,10 @@ This document outlines the implementation tasks for the Machine Framework system
   - Test power restore returns to previous state
   - _Requirements: 2, 5_
 
-- [ ] 26. Write unit tests for recipe processing
+- [x] 26. Write unit tests for recipe processing
+
+
+
   - Test CanProcessRecipe with sufficient/insufficient inputs
   - Test CompleteProcessing consumes inputs and produces outputs
   - Test SetActiveRecipe switches recipes correctly
