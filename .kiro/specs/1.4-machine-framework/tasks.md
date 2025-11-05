@@ -130,7 +130,9 @@ This document outlines the implementation tasks for the Machine Framework system
   - Implement OnExitProcessing method (reset progress and time remaining)
   - _Requirements: 2, 9_
 
-- [ ] 13. Implement MachineBase - Part 7: Recipe processing
+- [x] 13. Implement MachineBase - Part 7: Recipe processing
+
+
   - Implement SetActiveRecipe method (validate recipe, cancel current processing if needed, set activeRecipe, update powerConsumption, transition to Idle)
   - Implement CanProcessRecipe method (check power, enabled state, inputs, output space)
   - Implement HasRequiredInputs method (check all recipe inputs are in buffers)
@@ -141,20 +143,24 @@ This document outlines the implementation tasks for the Machine Framework system
   - Implement IsRecipeAvailable and GetAvailableRecipes methods
   - _Requirements: 4, 8, 18_
 
-- [ ] 14. Implement MachineBase - Part 8: Buffer management
+- [x] 14. Implement MachineBase - Part 8: Buffer management
+
   - Implement GetInputBufferAmount method (sum across all input ports)
   - Implement RemoveFromInputBuffer method (remove from ports until amount satisfied)
   - Implement AddToOutputBuffer method (add to first available output port)
   - Implement CanAddToOutputBuffer method (check if any output port has space)
   - _Requirements: 6, 7_
 
-- [ ] 15. Implement MachineBase - Part 9: Power management
+- [x] 15. Implement MachineBase - Part 9: Power management
+
   - Implement SetPowered method (update isPowered, fire OnPowerStatusChanged, transition to/from NoPower state)
   - Implement RegisterWithPowerGrid method (placeholder for future PowerGrid integration)
   - Implement UnregisterFromPowerGrid method (placeholder for future PowerGrid integration)
   - _Requirements: 5_
 
-- [ ] 16. Implement MachineBase - Part 10: Grid integration
+- [x] 16. Implement MachineBase - Part 10: Grid integration
+
+
   - Implement SetGridPosition method (store gridPosition)
   - Implement SetRotation method (clamp rotation 0-3, call UpdateVisualRotation)
   - Implement GetOccupiedCells method (return list of all cells based on gridPosition and gridSize)

@@ -146,50 +146,205 @@ namespace SantasWorkshop.Machines
         /// </summary>
         public bool IsPowered => isPowered;
         
-        /// <summary>
-        /// Sets the powered state of the machine.
-        /// Called by the power grid when power availability changes.
-        /// </summary>
-        /// <param name="powered">True if power is available, false otherwise.</param>
-        public virtual void SetPowered(bool powered)
-        {
-            // Implementation will be added in later tasks
-        }
+        // SetPowered implementation is in the Power Management region
         
         #endregion
         
-        #region Recipe Processing (Placeholder)
+        #region Recipe Processing
+        
+        /// <summary>
+        /// Sets the active recipe for this machine.
+        /// Validates the recipe and cancels current processing if needed.
+        /// </summary>
+        /// <param name="recipe">The recipe to set as active.</param>
+        public virtual void SetActiveRecipe(Recipe recipe)
+        {
+            if (recipe == null)
+            {
+                activeRecipe = null;
+                powerConsumption = 0f;
+                return;
+            }
+            
+            // Validate recipe is available for this machine
+            if (!IsRecipeAvailable(recipe))
+            {
+                Debug.LogWarning($"Recipe {recipe.recipeId} is not available for machine {machineId}");
+                return;
+            }
+            
+            // If currently processing, cancel and refund
+            if (currentState == MachineState.Processing)
+            {
+                CancelProcessing();
+            }
+            
+            activeRecipe = recipe;
+            powerConsumption = recipe.powerConsumption;
+            
+            TransitionToState(MachineState.Idle);
+        }
         
         /// <summary>
         /// Checks if the machine can process the given recipe.
-        /// Implementation will be added in task 13.
+        /// Validates power, enabled state, inputs, and output space.
         /// </summary>
         /// <param name="recipe">The recipe to check.</param>
         /// <returns>True if the recipe can be processed, false otherwise.</returns>
         protected virtual bool CanProcessRecipe(Recipe recipe)
         {
-            // TODO: Implement in task 13
-            return false;
-        }
-        
-        /// <summary>
-        /// Checks if the output buffer has space for the active recipe's outputs.
-        /// Implementation will be added in task 13.
-        /// </summary>
-        /// <returns>True if there is space, false otherwise.</returns>
-        protected virtual bool HasOutputSpace()
-        {
-            // TODO: Implement in task 13
+            if (recipe == null) return false;
+            if (!isPowered) return false;
+            if (!isEnabled) return false;
+            
+            // Check input availability
+            if (!HasRequiredInputs(recipe)) return false;
+            
+            // Check output space
+            if (!HasOutputSpace(recipe)) return false;
+            
             return true;
         }
         
         /// <summary>
+        /// Checks if all required inputs for a recipe are available in the input buffers.
+        /// </summary>
+        /// <param name="recipe">The recipe to check.</param>
+        /// <returns>True if all inputs are available, false otherwise.</returns>
+        protected virtual bool HasRequiredInputs(Recipe recipe)
+        {
+            if (recipe == null || recipe.inputs == null) return false;
+            
+            foreach (var input in recipe.inputs)
+            {
+                int availableAmount = GetInputBufferAmount(input.resourceId);
+                if (availableAmount < input.amount)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Checks if the output buffers have space for all outputs of a recipe.
+        /// </summary>
+        /// <param name="recipe">The recipe to check.</param>
+        /// <returns>True if there is space for all outputs, false otherwise.</returns>
+        protected virtual bool HasOutputSpace(Recipe recipe)
+        {
+            if (recipe == null || recipe.outputs == null) return true;
+            
+            foreach (var output in recipe.outputs)
+            {
+                if (!CanAddToOutputBuffer(output.resourceId, output.amount))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Checks if the output buffer has space for the active recipe's outputs.
+        /// </summary>
+        /// <returns>True if there is space, false otherwise.</returns>
+        protected virtual bool HasOutputSpace()
+        {
+            if (activeRecipe == null) return true;
+            return HasOutputSpace(activeRecipe);
+        }
+        
+        /// <summary>
         /// Completes the current processing cycle.
-        /// Implementation will be added in task 13.
+        /// Consumes inputs, produces outputs, and checks if processing can continue.
         /// </summary>
         protected virtual void CompleteProcessing()
         {
-            // TODO: Implement in task 13
+            if (activeRecipe == null) return;
+            
+            // Consume inputs
+            ConsumeInputs(activeRecipe);
+            
+            // Produce outputs
+            ProduceOutputs(activeRecipe);
+            
+            OnProcessingCompleted?.Invoke(activeRecipe);
+            
+            // Check if we can continue processing
+            if (CanProcessRecipe(activeRecipe))
+            {
+                // Reset and continue
+                processingProgress = 0f;
+                processingTimeRemaining = activeRecipe.processingTime / speedMultiplier;
+            }
+            else
+            {
+                TransitionToState(MachineState.Idle);
+            }
+        }
+        
+        /// <summary>
+        /// Cancels the current processing cycle.
+        /// Resets progress without consuming inputs (they remain in buffers).
+        /// </summary>
+        protected virtual void CancelProcessing()
+        {
+            processingProgress = 0f;
+            processingTimeRemaining = 0f;
+        }
+        
+        /// <summary>
+        /// Consumes input resources from the input buffers according to the recipe.
+        /// </summary>
+        /// <param name="recipe">The recipe whose inputs should be consumed.</param>
+        protected virtual void ConsumeInputs(Recipe recipe)
+        {
+            if (recipe == null || recipe.inputs == null) return;
+            
+            foreach (var input in recipe.inputs)
+            {
+                RemoveFromInputBuffer(input.resourceId, input.amount);
+            }
+        }
+        
+        /// <summary>
+        /// Produces output resources and adds them to the output buffers according to the recipe.
+        /// </summary>
+        /// <param name="recipe">The recipe whose outputs should be produced.</param>
+        protected virtual void ProduceOutputs(Recipe recipe)
+        {
+            if (recipe == null || recipe.outputs == null) return;
+            
+            foreach (var output in recipe.outputs)
+            {
+                AddToOutputBuffer(output.resourceId, output.amount);
+            }
+        }
+        
+        /// <summary>
+        /// Checks if a recipe is available for this machine.
+        /// </summary>
+        /// <param name="recipe">The recipe to check.</param>
+        /// <returns>True if the recipe is in the machine's available recipes list, false otherwise.</returns>
+        protected virtual bool IsRecipeAvailable(Recipe recipe)
+        {
+            if (machineData == null || recipe == null) return false;
+            if (machineData.availableRecipes == null) return false;
+            return machineData.availableRecipes.Contains(recipe);
+        }
+        
+        /// <summary>
+        /// Gets all recipes available for this machine.
+        /// </summary>
+        /// <returns>A list of available recipes.</returns>
+        public virtual List<Recipe> GetAvailableRecipes()
+        {
+            if (machineData == null || machineData.availableRecipes == null)
+            {
+                return new List<Recipe>();
+            }
+            return new List<Recipe>(machineData.availableRecipes);
         }
         
         #endregion
@@ -642,37 +797,193 @@ namespace SantasWorkshop.Machines
         
         #endregion
         
-        #region Power Management (Placeholder)
+        #region Buffer Management
         
         /// <summary>
-        /// Registers this machine with the power grid.
-        /// Implementation will be added in task 15.
+        /// Gets the total amount of a specific resource across all input ports.
         /// </summary>
-        protected virtual void RegisterWithPowerGrid()
+        /// <param name="resourceId">The resource type to query.</param>
+        /// <returns>The total amount of the resource in all input buffers.</returns>
+        protected virtual int GetInputBufferAmount(string resourceId)
         {
-            // TODO: Implement in task 15
+            int total = 0;
+            foreach (var port in inputPorts)
+            {
+                total += port.GetResourceAmount(resourceId);
+            }
+            return total;
         }
         
         /// <summary>
-        /// Unregisters this machine from the power grid.
-        /// Implementation will be added in task 15.
+        /// Removes a specified amount of a resource from the input buffers.
+        /// Removes from ports sequentially until the amount is satisfied.
         /// </summary>
-        protected virtual void UnregisterFromPowerGrid()
+        /// <param name="resourceId">The resource type to remove.</param>
+        /// <param name="amount">The amount to remove.</param>
+        /// <returns>True if the full amount was removed, false otherwise.</returns>
+        protected virtual bool RemoveFromInputBuffer(string resourceId, int amount)
         {
-            // TODO: Implement in task 15
+            int remaining = amount;
+            
+            foreach (var port in inputPorts)
+            {
+                int removed = port.RemoveResource(resourceId, remaining);
+                remaining -= removed;
+                
+                if (remaining <= 0) break;
+            }
+            
+            return remaining == 0;
+        }
+        
+        /// <summary>
+        /// Adds a specified amount of a resource to the output buffers.
+        /// Adds to the first available output port with space.
+        /// </summary>
+        /// <param name="resourceId">The resource type to add.</param>
+        /// <param name="amount">The amount to add.</param>
+        /// <returns>True if the resource was added successfully, false if no space available.</returns>
+        protected virtual bool AddToOutputBuffer(string resourceId, int amount)
+        {
+            // Try to add to first available output port
+            foreach (var port in outputPorts)
+            {
+                if (port.CanAddResource(resourceId, amount))
+                {
+                    port.AddResource(resourceId, amount);
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        /// <summary>
+        /// Checks if a specified amount of a resource can be added to any output buffer.
+        /// </summary>
+        /// <param name="resourceId">The resource type to check.</param>
+        /// <param name="amount">The amount to check.</param>
+        /// <returns>True if there is space in at least one output port, false otherwise.</returns>
+        protected virtual bool CanAddToOutputBuffer(string resourceId, int amount)
+        {
+            foreach (var port in outputPorts)
+            {
+                if (port.CanAddResource(resourceId, amount))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         #endregion
         
-        #region Grid Integration (Placeholder)
+        #region Power Management
+        
+        /// <summary>
+        /// Sets the powered state of the machine.
+        /// Called by the power grid when power availability changes.
+        /// </summary>
+        /// <param name="powered">True if power is available, false otherwise.</param>
+        public override void SetPowered(bool powered)
+        {
+            if (isPowered == powered) return;
+            
+            isPowered = powered;
+            OnPowerStatusChanged?.Invoke(powered);
+            
+            if (!powered && currentState != MachineState.NoPower && currentState != MachineState.Disabled)
+            {
+                TransitionToState(MachineState.NoPower);
+            }
+            else if (powered && currentState == MachineState.NoPower)
+            {
+                TransitionToState(previousState);
+            }
+        }
+        
+        /// <summary>
+        /// Registers this machine with the power grid.
+        /// Placeholder for future PowerGrid integration.
+        /// </summary>
+        protected virtual void RegisterWithPowerGrid()
+        {
+            // TODO: Integrate with PowerGrid system when implemented
+            // PowerGrid.Instance?.RegisterConsumer(this);
+        }
+        
+        /// <summary>
+        /// Unregisters this machine from the power grid.
+        /// Placeholder for future PowerGrid integration.
+        /// </summary>
+        protected virtual void UnregisterFromPowerGrid()
+        {
+            // TODO: Integrate with PowerGrid system when implemented
+            // PowerGrid.Instance?.UnregisterConsumer(this);
+        }
+        
+        #endregion
+        
+        #region Grid Integration
+        
+        /// <summary>
+        /// Sets the grid position of this machine.
+        /// </summary>
+        /// <param name="position">The grid position to set.</param>
+        public virtual void SetGridPosition(Vector3Int position)
+        {
+            gridPosition = position;
+        }
+        
+        /// <summary>
+        /// Sets the rotation of this machine.
+        /// Clamps rotation to 0-3 and updates visual representation.
+        /// </summary>
+        /// <param name="rot">The rotation value (0-3 for 0°, 90°, 180°, 270°).</param>
+        public virtual void SetRotation(int rot)
+        {
+            rotation = Mathf.Clamp(rot, 0, 3);
+            UpdateVisualRotation();
+        }
+        
+        /// <summary>
+        /// Gets all grid cells occupied by this machine.
+        /// </summary>
+        /// <returns>A list of all occupied grid positions.</returns>
+        public virtual List<Vector3Int> GetOccupiedCells()
+        {
+            List<Vector3Int> cells = new List<Vector3Int>();
+            
+            for (int x = 0; x < gridSize.x; x++)
+            {
+                for (int z = 0; z < gridSize.y; z++)
+                {
+                    cells.Add(gridPosition + new Vector3Int(x, 0, z));
+                }
+            }
+            
+            return cells;
+        }
         
         /// <summary>
         /// Frees the grid cells occupied by this machine.
-        /// Implementation will be added in task 16.
+        /// Calls GridManager to release the cells.
         /// </summary>
         protected virtual void FreeGridCells()
         {
-            // TODO: Implement in task 16
+            if (GridManager.Instance != null)
+            {
+                GridManager.Instance.FreeCells(gridPosition, gridSize);
+            }
+        }
+        
+        /// <summary>
+        /// Updates the visual rotation of the machine.
+        /// Rotates the transform based on the rotation value.
+        /// </summary>
+        protected virtual void UpdateVisualRotation()
+        {
+            transform.rotation = Quaternion.Euler(0, rotation * 90f, 0);
         }
         
         #endregion
