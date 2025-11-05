@@ -250,7 +250,9 @@ This document outlines the implementation tasks for the Machine Framework system
   - Test recipe validation
   - _Requirements: 4, 8, 9, 18_
 
-- [ ] 27. Write integration tests
+- [x] 27. Write integration tests
+
+
   - Test full processing cycle (add inputs → process → extract outputs)
   - Test multi-recipe machine switching
   - Test save/load preserves machine state
@@ -258,35 +260,47 @@ This document outlines the implementation tasks for the Machine Framework system
   - Test enable/disable functionality
   - _Requirements: All_
 
-- [ ] 28. Performance testing
+- [x] 28. Performance testing
+
+
   - Test 100 machines updating per frame
   - Measure state machine update time
   - Measure buffer operation time
   - Verify performance targets (<0.1ms per machine)
   - _Requirements: All_
 
-- [ ] 29. Create example machine prefabs
+- [x] 29. Create example machine prefabs
+
+
   - Create visual prefabs for TestExtractor and TestProcessor
   - Add basic 3D models or placeholder cubes
   - Add visual indicators for state (lights, particles)
   - Configure prefab references in MachineData assets
   - _Requirements: 17_
 
-- [ ] 30. Integration with existing systems
+- [x] 30. Integration with existing systems
+
+
+
   - Verify integration with ResourceManager for resource operations
   - Verify integration with GridManager for placement and cell occupation
   - Test machine placement through PlacementController (from Grid System spec)
   - Ensure machines register/unregister correctly
   - _Requirements: 12, 15_
 
-- [ ] 31. Documentation and examples
+- [x] 31. Documentation and examples
+
+
   - Create example derived machine classes showing proper inheritance
   - Document virtual method override patterns
   - Create designer guide for creating MachineData assets
   - Document recipe creation workflow
   - _Requirements: All_
 
-- [ ] 32. Final validation and cleanup
+- [x] 32. Final validation and cleanup
+
+
+
   - Run all tests and verify they pass
   - Check for memory leaks (event subscriptions)
   - Verify no null reference exceptions
