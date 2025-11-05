@@ -32,7 +32,7 @@
 - [x] **1.4: Machine Framework** (3 weeks | Needs: 1.2, 1.3)
   - Base machine class, states, input/output ports, recipe system, power interface
 
-- [ ] **1.5: Time & Simulation Manager** (1 week | Needs: 1.1)
+- [x] **1.5: Time & Simulation Manager** (1 week | Needs: 1.1)
   - Calendar system, time speed controls, simulation tick, event scheduling
 
 ---
