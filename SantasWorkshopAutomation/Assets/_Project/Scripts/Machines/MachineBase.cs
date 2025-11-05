@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using SantasWorkshop.Data;
+using SantasWorkshop.Core;
 
 namespace SantasWorkshop.Machines
 {
@@ -10,8 +11,16 @@ namespace SantasWorkshop.Machines
     /// Provides common functionality for state management, power consumption,
     /// recipe processing, and grid integration.
     /// </summary>
-    public abstract class MachineBase : MonoBehaviour, IPowerConsumer
+    public abstract class MachineBase : MonoBehaviour, IPowerConsumer, IMachine
     {
+        #region Constants
+        
+        private const float SPEED_MULTIPLIER_PER_TIER = 0.2f;
+        private const float EFFICIENCY_MULTIPLIER_PER_TIER = 0.1f;
+        private const float MIN_EFFICIENCY_MULTIPLIER = 0.5f;
+        
+        #endregion
+        
         #region Serialized Fields
         
         [Header("Machine Identity")]
@@ -20,6 +29,160 @@ namespace SantasWorkshop.Machines
         
         [Tooltip("Configuration data for this machine type")]
         [SerializeField] protected MachineData machineData;
+        
+        #endregion
+        
+        #region Save/Load
+        
+        /// <summary>
+        /// Gets the save data for this machine.
+        /// Captures all state needed to restore the machine later.
+        /// </summary>
+        /// <returns>A MachineSaveData struct containing all machine state.</returns>
+        public virtual MachineSaveData GetSaveData()
+        {
+            return new MachineSaveData
+            {
+                machineId = machineId,
+                machineType = GetType().Name,
+                tier = tier,
+                gridPosition = gridPosition,
+                rotation = rotation,
+                currentState = currentState,
+                processingProgress = processingProgress,
+                activeRecipeId = activeRecipe?.recipeId,
+                inputBuffers = GetInputBufferSaveData(),
+                outputBuffers = GetOutputBufferSaveData(),
+                isEnabled = isEnabled
+            };
+        }
+        
+        /// <summary>
+        /// Loads save data and restores the machine's state.
+        /// Restores all fields, buffers, and transitions to the saved state.
+        /// </summary>
+        /// <param name="saveData">The save data to load from.</param>
+        public virtual void LoadSaveData(MachineSaveData saveData)
+        {
+            machineId = saveData.machineId;
+            tier = saveData.tier;
+            gridPosition = saveData.gridPosition;
+            rotation = saveData.rotation;
+            processingProgress = saveData.processingProgress;
+            isEnabled = saveData.isEnabled;
+            
+            // Recalculate multipliers based on loaded tier
+            CalculateMultipliers();
+            
+            // Load recipe
+            if (!string.IsNullOrEmpty(saveData.activeRecipeId))
+            {
+                // Find recipe in available recipes
+                if (machineData != null && machineData.availableRecipes != null)
+                {
+                    activeRecipe = machineData.availableRecipes.Find(r => r != null && r.recipeId == saveData.activeRecipeId);
+                    
+                    if (activeRecipe == null)
+                    {
+                        Debug.LogWarning($"Machine {machineId} could not find saved recipe '{saveData.activeRecipeId}'!");
+                    }
+                    else
+                    {
+                        powerConsumption = activeRecipe.powerConsumption;
+                    }
+                }
+            }
+            else
+            {
+                activeRecipe = null;
+                powerConsumption = 0f;
+            }
+            
+            // Load buffers
+            LoadInputBufferSaveData(saveData.inputBuffers);
+            LoadOutputBufferSaveData(saveData.outputBuffers);
+            
+            // Update visual rotation
+            UpdateVisualRotation();
+            
+            // Restore state (do this last after everything is loaded)
+            TransitionToState(saveData.currentState);
+            
+            // If we were processing, restore the time remaining
+            if (currentState == MachineState.Processing && activeRecipe != null)
+            {
+                float totalTime = activeRecipe.processingTime / speedMultiplier;
+                processingTimeRemaining = totalTime * (1f - processingProgress);
+            }
+        }
+        
+        /// <summary>
+        /// Gets save data for all input buffers.
+        /// </summary>
+        /// <returns>A list of BufferSaveData for each input port.</returns>
+        protected virtual List<BufferSaveData> GetInputBufferSaveData()
+        {
+            List<BufferSaveData> data = new List<BufferSaveData>();
+            foreach (var port in inputPorts)
+            {
+                if (port != null)
+                {
+                    data.Add(port.GetSaveData());
+                }
+            }
+            return data;
+        }
+        
+        /// <summary>
+        /// Gets save data for all output buffers.
+        /// </summary>
+        /// <returns>A list of BufferSaveData for each output port.</returns>
+        protected virtual List<BufferSaveData> GetOutputBufferSaveData()
+        {
+            List<BufferSaveData> data = new List<BufferSaveData>();
+            foreach (var port in outputPorts)
+            {
+                if (port != null)
+                {
+                    data.Add(port.GetSaveData());
+                }
+            }
+            return data;
+        }
+        
+        /// <summary>
+        /// Loads save data into input buffers.
+        /// </summary>
+        /// <param name="data">The list of BufferSaveData to load.</param>
+        protected virtual void LoadInputBufferSaveData(List<BufferSaveData> data)
+        {
+            if (data == null) return;
+            
+            for (int i = 0; i < Mathf.Min(data.Count, inputPorts.Count); i++)
+            {
+                if (inputPorts[i] != null)
+                {
+                    inputPorts[i].LoadSaveData(data[i]);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Loads save data into output buffers.
+        /// </summary>
+        /// <param name="data">The list of BufferSaveData to load.</param>
+        protected virtual void LoadOutputBufferSaveData(List<BufferSaveData> data)
+        {
+            if (data == null) return;
+            
+            for (int i = 0; i < Mathf.Min(data.Count, outputPorts.Count); i++)
+            {
+                if (outputPorts[i] != null)
+                {
+                    outputPorts[i].LoadSaveData(data[i]);
+                }
+            }
+        }
         
         #endregion
         
@@ -131,6 +294,25 @@ namespace SantasWorkshop.Machines
         
         #endregion
         
+        #region Cache Fields
+        
+        /// <summary>
+        /// Cached input buffer totals for performance optimization.
+        /// </summary>
+        private Dictionary<string, int> _cachedInputTotals = new Dictionary<string, int>();
+        
+        /// <summary>
+        /// Flag indicating if the input cache needs to be rebuilt.
+        /// </summary>
+        private bool _inputCacheDirty = true;
+        
+        /// <summary>
+        /// Flag indicating if we're resuming processing after power loss.
+        /// </summary>
+        private bool _resumingProcessing = false;
+        
+        #endregion
+        
         #region IPowerConsumer Implementation
         
         /// <summary>
@@ -147,6 +329,51 @@ namespace SantasWorkshop.Machines
         public bool IsPowered => isPowered;
         
         // SetPowered implementation is in the Power Management region
+        
+        #endregion
+        
+        #region IMachine Implementation
+        
+        /// <summary>
+        /// Gets the unique identifier for this machine instance.
+        /// </summary>
+        string IMachine.MachineId => machineId;
+        
+        /// <summary>
+        /// Gets the current operational state of the machine.
+        /// </summary>
+        MachineState IMachine.State => currentState;
+        
+        /// <summary>
+        /// Initializes the machine with configuration data.
+        /// Called once when the machine is first created or loaded.
+        /// </summary>
+        /// <param name="data">Machine configuration data</param>
+        void IMachine.Initialize(MachineData data)
+        {
+            machineData = data;
+            InitializeFromData();
+        }
+        
+        /// <summary>
+        /// Updates the machine's logic each frame or simulation tick.
+        /// </summary>
+        /// <param name="deltaTime">Time elapsed since last tick</param>
+        void IMachine.Tick(float deltaTime)
+        {
+            if (!isEnabled) return;
+            UpdateStateMachine();
+        }
+        
+        /// <summary>
+        /// Shuts down the machine and cleans up resources.
+        /// Called when the machine is destroyed or disabled.
+        /// </summary>
+        void IMachine.Shutdown()
+        {
+            UnregisterFromPowerGrid();
+            FreeGridCells();
+        }
         
         #endregion
         
@@ -170,6 +397,13 @@ namespace SantasWorkshop.Machines
             if (!IsRecipeAvailable(recipe))
             {
                 Debug.LogWarning($"Recipe {recipe.recipeId} is not available for machine {machineId}");
+                return;
+            }
+            
+            // Validate tier requirement
+            if (recipe.requiredTier > tier)
+            {
+                Debug.LogWarning($"Recipe {recipe.recipeId} requires tier {recipe.requiredTier}, but machine {machineId} is only tier {tier}");
                 return;
             }
             
@@ -354,24 +588,33 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Event fired when the machine transitions to a new state.
         /// Parameters: (oldState, newState)
+        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
+        /// Example:
+        /// <code>
+        /// private void OnEnable() { machine.OnStateChanged += HandleStateChange; }
+        /// private void OnDisable() { machine.OnStateChanged -= HandleStateChange; }
+        /// </code>
         /// </summary>
         public event Action<MachineState, MachineState> OnStateChanged;
         
         /// <summary>
         /// Event fired when the machine starts processing a recipe.
         /// Parameter: The recipe being processed.
+        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<Recipe> OnProcessingStarted;
         
         /// <summary>
         /// Event fired when the machine completes processing a recipe.
         /// Parameter: The recipe that was completed.
+        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<Recipe> OnProcessingCompleted;
         
         /// <summary>
         /// Event fired when the machine's power status changes.
         /// Parameter: True if powered, false if unpowered.
+        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<bool> OnPowerStatusChanged;
         
@@ -460,10 +703,16 @@ namespace SantasWorkshop.Machines
         
         /// <summary>
         /// Called when the MonoBehaviour will be destroyed.
-        /// Unregisters from power grid and frees grid cells.
+        /// Clears event subscriptions, unregisters from power grid, and frees grid cells.
         /// </summary>
         protected virtual void OnDestroy()
         {
+            // Clear all event subscriptions to prevent memory leaks
+            OnStateChanged = null;
+            OnProcessingStarted = null;
+            OnProcessingCompleted = null;
+            OnPowerStatusChanged = null;
+            
             UnregisterFromPowerGrid();
             FreeGridCells();
         }
@@ -535,12 +784,12 @@ namespace SantasWorkshop.Machines
         /// </summary>
         protected virtual void CalculateMultipliers()
         {
-            // Speed increases by 20% per tier
-            speedMultiplier = 1f + (tier - 1) * 0.2f;
+            // Speed increases by SPEED_MULTIPLIER_PER_TIER per tier
+            speedMultiplier = 1f + (tier - 1) * SPEED_MULTIPLIER_PER_TIER;
             
-            // Efficiency improves by 10% per tier (reduces power consumption)
-            efficiencyMultiplier = 1f - (tier - 1) * 0.1f;
-            efficiencyMultiplier = Mathf.Max(efficiencyMultiplier, 0.5f); // Min 50% consumption
+            // Efficiency improves by EFFICIENCY_MULTIPLIER_PER_TIER per tier (reduces power consumption)
+            efficiencyMultiplier = 1f - (tier - 1) * EFFICIENCY_MULTIPLIER_PER_TIER;
+            efficiencyMultiplier = Mathf.Max(efficiencyMultiplier, MIN_EFFICIENCY_MULTIPLIER);
         }
         
         #endregion
@@ -623,23 +872,10 @@ namespace SantasWorkshop.Machines
         
         /// <summary>
         /// Updates the state machine logic each frame.
-        /// Checks power status and updates current state behavior.
+        /// Power status changes are handled in SetPowered() method.
         /// </summary>
         protected virtual void UpdateStateMachine()
         {
-            // Check power status
-            if (!isPowered && currentState != MachineState.NoPower && currentState != MachineState.Disabled)
-            {
-                TransitionToState(MachineState.NoPower);
-                return;
-            }
-            
-            if (isPowered && currentState == MachineState.NoPower)
-            {
-                TransitionToState(previousState);
-                return;
-            }
-            
             // Update current state
             switch (currentState)
             {
@@ -691,6 +927,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Called when entering Processing state.
         /// Initializes processing progress and fires OnProcessingStarted event.
+        /// Preserves progress if resuming from power loss.
         /// </summary>
         protected virtual void OnEnterProcessing()
         {
@@ -701,10 +938,14 @@ namespace SantasWorkshop.Machines
                 return;
             }
             
-            processingProgress = 0f;
-            processingTimeRemaining = activeRecipe.processingTime / speedMultiplier;
-            
-            OnProcessingStarted?.Invoke(activeRecipe);
+            // Only reset progress if starting fresh (not resuming from power loss)
+            if (!_resumingProcessing)
+            {
+                processingProgress = 0f;
+                processingTimeRemaining = activeRecipe.processingTime / speedMultiplier;
+                OnProcessingStarted?.Invoke(activeRecipe);
+            }
+            // else: resuming from power loss, keep existing progress
         }
         
         /// <summary>
@@ -786,13 +1027,22 @@ namespace SantasWorkshop.Machines
         
         /// <summary>
         /// Sets the visual state of the machine.
-        /// Override in derived classes to update visual indicators.
-        /// Implementation will be added in task 18.
+        /// Override in derived classes to update visual indicators based on state.
+        /// Base implementation provides logging for debugging.
         /// </summary>
         /// <param name="state">The state to visualize.</param>
         protected virtual void SetVisualState(MachineState state)
         {
-            // TODO: Implement in task 18
+            // Base implementation - derived classes should override to add visual feedback
+            // Examples of visual feedback:
+            // - Idle: Dim ambient light, no particles
+            // - WaitingForInput: Pulsing yellow indicator
+            // - Processing: Bright light, active particles, rotating parts
+            // - WaitingForOutput: Pulsing red indicator
+            // - NoPower: Flickering red light, warning icon
+            // - Disabled: Greyed out, no effects
+            
+            Debug.Log($"Machine {machineId} visual state changed to {state}");
         }
         
         #endregion
@@ -801,17 +1051,42 @@ namespace SantasWorkshop.Machines
         
         /// <summary>
         /// Gets the total amount of a specific resource across all input ports.
+        /// Uses caching for performance optimization.
         /// </summary>
         /// <param name="resourceId">The resource type to query.</param>
         /// <returns>The total amount of the resource in all input buffers.</returns>
         protected virtual int GetInputBufferAmount(string resourceId)
         {
-            int total = 0;
+            if (_inputCacheDirty)
+            {
+                RebuildInputCache();
+            }
+            
+            return _cachedInputTotals.TryGetValue(resourceId, out int amount) ? amount : 0;
+        }
+        
+        /// <summary>
+        /// Rebuilds the input buffer cache by aggregating all resources from all ports.
+        /// </summary>
+        private void RebuildInputCache()
+        {
+            _cachedInputTotals.Clear();
+            
             foreach (var port in inputPorts)
             {
-                total += port.GetResourceAmount(resourceId);
+                if (port == null) continue;
+                
+                var allResources = port.GetAllResources();
+                foreach (var kvp in allResources)
+                {
+                    if (_cachedInputTotals.ContainsKey(kvp.Key))
+                        _cachedInputTotals[kvp.Key] += kvp.Value;
+                    else
+                        _cachedInputTotals[kvp.Key] = kvp.Value;
+                }
             }
-            return total;
+            
+            _inputCacheDirty = false;
         }
         
         /// <summary>
@@ -823,6 +1098,18 @@ namespace SantasWorkshop.Machines
         /// <returns>True if the full amount was removed, false otherwise.</returns>
         protected virtual bool RemoveFromInputBuffer(string resourceId, int amount)
         {
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                Debug.LogWarning($"Machine {machineId}: Attempted to remove resource with empty ID");
+                return false;
+            }
+            
+            if (amount <= 0)
+            {
+                Debug.LogWarning($"Machine {machineId}: Attempted to remove invalid amount {amount}");
+                return false;
+            }
+            
             int remaining = amount;
             
             foreach (var port in inputPorts)
@@ -832,6 +1119,9 @@ namespace SantasWorkshop.Machines
                 
                 if (remaining <= 0) break;
             }
+            
+            // Invalidate cache after modification
+            _inputCacheDirty = true;
             
             return remaining == 0;
         }
@@ -845,6 +1135,18 @@ namespace SantasWorkshop.Machines
         /// <returns>True if the resource was added successfully, false if no space available.</returns>
         protected virtual bool AddToOutputBuffer(string resourceId, int amount)
         {
+            if (string.IsNullOrEmpty(resourceId))
+            {
+                Debug.LogWarning($"Machine {machineId}: Attempted to add resource with empty ID");
+                return false;
+            }
+            
+            if (amount <= 0)
+            {
+                Debug.LogWarning($"Machine {machineId}: Attempted to add invalid amount {amount}");
+                return false;
+            }
+            
             // Try to add to first available output port
             foreach (var port in outputPorts)
             {
@@ -883,22 +1185,26 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Sets the powered state of the machine.
         /// Called by the power grid when power availability changes.
+        /// Handles state transitions immediately when power changes.
         /// </summary>
         /// <param name="powered">True if power is available, false otherwise.</param>
-        public override void SetPowered(bool powered)
+        public virtual void SetPowered(bool powered)
         {
             if (isPowered == powered) return;
             
             isPowered = powered;
             OnPowerStatusChanged?.Invoke(powered);
             
+            // Handle state transitions immediately when power changes
             if (!powered && currentState != MachineState.NoPower && currentState != MachineState.Disabled)
             {
+                _resumingProcessing = (currentState == MachineState.Processing);
                 TransitionToState(MachineState.NoPower);
             }
             else if (powered && currentState == MachineState.NoPower)
             {
                 TransitionToState(previousState);
+                _resumingProcessing = false;
             }
         }
         
@@ -988,15 +1294,128 @@ namespace SantasWorkshop.Machines
         
         #endregion
         
-        #region Validation (Placeholder)
+        #region Enable/Disable
+        
+        /// <summary>
+        /// Sets the enabled state of the machine.
+        /// When disabled, the machine transitions to Disabled state and stops processing.
+        /// When enabled, the machine transitions back to Idle state.
+        /// </summary>
+        /// <param name="enabled">True to enable the machine, false to disable it.</param>
+        public virtual void SetEnabled(bool enabled)
+        {
+            if (isEnabled == enabled) return;
+            
+            isEnabled = enabled;
+            
+            if (!enabled)
+            {
+                TransitionToState(MachineState.Disabled);
+            }
+            else if (currentState == MachineState.Disabled)
+            {
+                TransitionToState(MachineState.Idle);
+            }
+        }
+        
+        #endregion
+        
+        #region Validation
         
         /// <summary>
         /// Validates the machine's configuration.
-        /// Implementation will be added in task 19.
+        /// Checks for common errors like missing MachineData, invalid ports, and invalid recipes.
+        /// Logs warnings for any issues found.
         /// </summary>
         protected virtual void ValidateConfiguration()
         {
-            // TODO: Implement in task 19
+            // Check if MachineData is assigned
+            if (machineData == null)
+            {
+                Debug.LogError($"Machine {gameObject.name} has no MachineData assigned!");
+                return;
+            }
+            
+            // Check if machine has at least one port
+            if (inputPorts.Count == 0 && outputPorts.Count == 0)
+            {
+                Debug.LogWarning($"Machine {machineId} has no input or output ports!");
+            }
+            
+            // Validate input ports
+            for (int i = 0; i < inputPorts.Count; i++)
+            {
+                if (inputPorts[i] == null)
+                {
+                    Debug.LogError($"Machine {machineId} has null input port at index {i}!");
+                }
+            }
+            
+            // Validate output ports
+            for (int i = 0; i < outputPorts.Count; i++)
+            {
+                if (outputPorts[i] == null)
+                {
+                    Debug.LogError($"Machine {machineId} has null output port at index {i}!");
+                }
+            }
+            
+            // Check if active recipe is valid
+            if (activeRecipe != null && !IsRecipeAvailable(activeRecipe))
+            {
+                Debug.LogWarning($"Machine {machineId} has invalid active recipe '{activeRecipe.recipeId}'! Clearing recipe.");
+                activeRecipe = null;
+            }
+            
+            // Validate available recipes
+            if (machineData.availableRecipes == null || machineData.availableRecipes.Count == 0)
+            {
+                Debug.LogWarning($"Machine {machineId} has no available recipes!");
+            }
+            else
+            {
+                // Check for null recipes in the list
+                for (int i = 0; i < machineData.availableRecipes.Count; i++)
+                {
+                    if (machineData.availableRecipes[i] == null)
+                    {
+                        Debug.LogWarning($"Machine {machineId} has null recipe at index {i} in available recipes!");
+                    }
+                }
+            }
+            
+            // Validate grid size
+            if (gridSize.x <= 0 || gridSize.y <= 0)
+            {
+                Debug.LogError($"Machine {machineId} has invalid grid size: {gridSize}!");
+            }
+            
+            // Validate tier
+            if (tier < 1)
+            {
+                Debug.LogWarning($"Machine {machineId} has invalid tier: {tier}! Setting to 1.");
+                tier = 1;
+                CalculateMultipliers();
+            }
+            
+            // Validate power consumption
+            if (powerConsumption < 0)
+            {
+                Debug.LogWarning($"Machine {machineId} has negative power consumption: {powerConsumption}! Setting to 0.");
+                powerConsumption = 0;
+            }
+        }
+        
+        #endregion
+        
+        #region Debug Helpers
+        
+        /// <summary>
+        /// Returns a string representation of this machine for debugging.
+        /// </summary>
+        public override string ToString()
+        {
+            return $"Machine[{machineId}] State:{currentState} Tier:{tier} Progress:{processingProgress:P0} Powered:{isPowered}";
         }
         
         #endregion

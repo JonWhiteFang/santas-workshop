@@ -174,6 +174,16 @@ namespace SantasWorkshop.Machines
         }
         
         /// <summary>
+        /// Gets a read-only view of all resources in the buffer.
+        /// Used for efficient caching and iteration.
+        /// </summary>
+        /// <returns>Dictionary of resource IDs to amounts.</returns>
+        public IReadOnlyDictionary<string, int> GetAllResources()
+        {
+            return buffer;
+        }
+        
+        /// <summary>
         /// Gets save data for this port.
         /// </summary>
         /// <returns>A BufferSaveData struct containing the port's state.</returns>
