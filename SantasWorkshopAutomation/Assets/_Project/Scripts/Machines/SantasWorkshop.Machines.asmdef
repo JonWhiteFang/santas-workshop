@@ -2,7 +2,9 @@
     "name": "SantasWorkshop.Machines",
     "rootNamespace": "SantasWorkshop.Machines",
     "references": [
-        "SantasWorkshop.Data"
+        "SantasWorkshop.Data",
+        "SantasWorkshop.Core",
+        "SantasWorkshop.Utilities"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

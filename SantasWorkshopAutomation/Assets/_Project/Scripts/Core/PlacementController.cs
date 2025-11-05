@@ -14,7 +14,7 @@ namespace SantasWorkshop.Core
         [Header("Input")]
         [SerializeField] private bool useLegacyInput = false; // Toggle for backward compatibility
 
-        [Header("Materials")]]
+        [Header("Materials")]
         [SerializeField] private Material validPlacementMaterial;
         [SerializeField] private Material invalidPlacementMaterial;
 

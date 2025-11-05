@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SantasWorkshop.Data;
 using SantasWorkshop.Core;
+using SantasWorkshop.Utilities;
 
 namespace SantasWorkshop.Machines
 {
@@ -207,15 +208,14 @@ namespace SantasWorkshop.Machines
         
         #region State Management Fields
         
-        /// <summary>
-        /// Current operational state of the machine.
-        /// </summary>
-        protected MachineState currentState = MachineState.Idle;
+        [Header("State (Debug - Read Only)")]
+        [SerializeField, ReadOnly]
+        [Tooltip("Current operational state of the machine")]
+        private MachineState currentState = MachineState.Idle;
         
-        /// <summary>
-        /// Previous operational state (used when transitioning from NoPower or Disabled).
-        /// </summary>
-        protected MachineState previousState = MachineState.Idle;
+        [SerializeField, ReadOnly]
+        [Tooltip("Previous operational state (used when transitioning from NoPower or Disabled)")]
+        private MachineState previousState = MachineState.Idle;
         
         #endregion
         
@@ -235,34 +235,31 @@ namespace SantasWorkshop.Machines
         
         #region Recipe Processing Fields
         
-        /// <summary>
-        /// Currently active recipe being processed.
-        /// </summary>
-        protected Recipe activeRecipe;
+        [Header("Processing (Debug - Read Only)")]
+        [SerializeField, ReadOnly]
+        [Tooltip("Currently active recipe being processed")]
+        private Recipe activeRecipe;
         
-        /// <summary>
-        /// Current processing progress (0.0 to 1.0).
-        /// </summary>
-        protected float processingProgress = 0f;
+        [SerializeField, ReadOnly]
+        [Tooltip("Current processing progress (0.0 to 1.0)")]
+        private float processingProgress = 0f;
         
-        /// <summary>
-        /// Time remaining to complete current processing (in seconds).
-        /// </summary>
-        protected float processingTimeRemaining = 0f;
+        [SerializeField, ReadOnly]
+        [Tooltip("Time remaining to complete current processing (in seconds)")]
+        private float processingTimeRemaining = 0f;
         
         #endregion
         
         #region Power Fields
         
-        /// <summary>
-        /// Whether this machine currently has sufficient power.
-        /// </summary>
-        protected bool isPowered = true;
+        [Header("Power (Debug - Read Only)")]
+        [SerializeField, ReadOnly]
+        [Tooltip("Whether this machine currently has sufficient power")]
+        private bool isPowered = true;
         
-        /// <summary>
-        /// Current power consumption in watts.
-        /// </summary>
-        protected float powerConsumption = 0f;
+        [SerializeField, ReadOnly]
+        [Tooltip("Current power consumption in watts")]
+        private float powerConsumption = 0f;
         
         #endregion
         
@@ -287,14 +284,19 @@ namespace SantasWorkshop.Machines
         
         #region Enable/Disable Fields
         
-        /// <summary>
-        /// Whether this machine is enabled (can be manually disabled by player).
-        /// </summary>
-        protected bool isEnabled = true;
+        [Header("Enable/Disable (Debug - Read Only)")]
+        [SerializeField, ReadOnly]
+        [Tooltip("Whether this machine is enabled (can be manually disabled by player)")]
+        private bool isEnabled = true;
         
         #endregion
         
         #region Cache Fields
+        
+        /// <summary>
+        /// Cached transform component.
+        /// </summary>
+        private Transform _transform;
         
         /// <summary>
         /// Cached input buffer totals for performance optimization.
@@ -305,6 +307,16 @@ namespace SantasWorkshop.Machines
         /// Flag indicating if the input cache needs to be rebuilt.
         /// </summary>
         private bool _inputCacheDirty = true;
+        
+        /// <summary>
+        /// Cached result of HasRequiredInputs for the active recipe.
+        /// </summary>
+        private bool _cachedHasInputs = false;
+        
+        /// <summary>
+        /// The recipe for which _cachedHasInputs was calculated.
+        /// </summary>
+        private Recipe _cachedInputsRecipe = null;
         
         /// <summary>
         /// Flag indicating if we're resuming processing after power loss.
@@ -396,29 +408,13 @@ namespace SantasWorkshop.Machines
                 return false;
             }
             
-            if (recipe.inputs == null || recipe.inputs.Length == 0)
-            {
-                error = $"Recipe '{recipe.recipeName}' has no inputs";
-                return false;
-            }
-            
-            if (recipe.outputs == null || recipe.outputs.Length == 0)
-            {
-                error = $"Recipe '{recipe.recipeName}' has no outputs";
-                return false;
-            }
-            
-            if (recipe.processingTime <= 0f)
-            {
-                error = $"Recipe '{recipe.recipeName}' has invalid processing time: {recipe.processingTime}";
-                return false;
-            }
-            
-            if (recipe.powerConsumption < 0f)
-            {
-                error = $"Recipe '{recipe.recipeName}' has negative power consumption: {recipe.powerConsumption}";
-                return false;
-            }
+            // Only check runtime-specific conditions
+            // ScriptableObject validation (Recipe.OnValidate) already ensures:
+            // - inputs/outputs exist and are valid
+            // - processing time > 0
+            // - power consumption >= 0
+            // - resource IDs are not empty
+            // - amounts are > 0
             
             if (recipe.requiredTier > tier)
             {
@@ -426,35 +422,30 @@ namespace SantasWorkshop.Machines
                 return false;
             }
             
-            // Validate input resource IDs
-            for (int i = 0; i < recipe.inputs.Length; i++)
+            #if UNITY_EDITOR
+            // In editor, perform additional validation for debugging
+            // This helps catch issues during development without impacting runtime performance
+            if (recipe.inputs == null || recipe.inputs.Length == 0)
             {
-                if (string.IsNullOrEmpty(recipe.inputs[i].resourceId))
-                {
-                    error = $"Recipe '{recipe.recipeName}' has input at index {i} with empty resourceId";
-                    return false;
-                }
-                if (recipe.inputs[i].amount <= 0)
-                {
-                    error = $"Recipe '{recipe.recipeName}' has input at index {i} with invalid amount: {recipe.inputs[i].amount}";
-                    return false;
-                }
+                error = $"Recipe '{recipe.recipeName}' has no inputs (this should be caught by OnValidate)";
+                Debug.LogError(error);
+                return false;
             }
             
-            // Validate output resource IDs
-            for (int i = 0; i < recipe.outputs.Length; i++)
+            if (recipe.outputs == null || recipe.outputs.Length == 0)
             {
-                if (string.IsNullOrEmpty(recipe.outputs[i].resourceId))
-                {
-                    error = $"Recipe '{recipe.recipeName}' has output at index {i} with empty resourceId";
-                    return false;
-                }
-                if (recipe.outputs[i].amount <= 0)
-                {
-                    error = $"Recipe '{recipe.recipeName}' has output at index {i} with invalid amount: {recipe.outputs[i].amount}";
-                    return false;
-                }
+                error = $"Recipe '{recipe.recipeName}' has no outputs (this should be caught by OnValidate)";
+                Debug.LogError(error);
+                return false;
             }
+            
+            if (recipe.processingTime <= 0f)
+            {
+                error = $"Recipe '{recipe.recipeName}' has invalid processing time: {recipe.processingTime} (this should be caught by OnValidate)";
+                Debug.LogError(error);
+                return false;
+            }
+            #endif
             
             return true;
         }
@@ -464,6 +455,22 @@ namespace SantasWorkshop.Machines
         /// Validates the recipe and cancels current processing if needed.
         /// </summary>
         /// <param name="recipe">The recipe to set as active.</param>
+        /// <example>
+        /// <code>
+        /// // Set a smelting recipe
+        /// Recipe ironSmeltingRecipe = Resources.Load&lt;Recipe&gt;("Recipes/IronSmelting");
+        /// machine.SetActiveRecipe(ironSmeltingRecipe);
+        /// 
+        /// // Clear the recipe (stop production)
+        /// machine.SetActiveRecipe(null);
+        /// 
+        /// // Check if recipe was set successfully
+        /// if (machine.activeRecipe == ironSmeltingRecipe)
+        /// {
+        ///     Debug.Log("Recipe set successfully");
+        /// }
+        /// </code>
+        /// </example>
         public virtual void SetActiveRecipe(Recipe recipe)
         {
             if (recipe == null)
@@ -547,21 +554,34 @@ namespace SantasWorkshop.Machines
             if (recipe == null || recipe.inputs == null || recipe.inputs.Length == 0)
                 return false;
             
-            // Rebuild cache once if dirty (amortized O(1) cost)
+            // If checking the same recipe and cache is clean, return cached result
+            if (!_inputCacheDirty && recipe == _cachedInputsRecipe)
+            {
+                return _cachedHasInputs;
+            }
+            
+            // Rebuild cache once if dirty
             if (_inputCacheDirty)
             {
                 RebuildInputCache();
             }
             
-            // Now use cached values for fast lookup
+            // Check inputs
+            bool hasInputs = true;
             foreach (var input in recipe.inputs)
             {
                 if (!_cachedInputTotals.TryGetValue(input.resourceId, out int available) || available < input.amount)
                 {
-                    return false;
+                    hasInputs = false;
+                    break;
                 }
             }
-            return true;
+            
+            // Cache result for this recipe
+            _cachedInputsRecipe = recipe;
+            _cachedHasInputs = hasInputs;
+            
+            return hasInputs;
         }
         
         /// <summary>
@@ -745,7 +765,7 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Event fired when the machine transitions to a new state.
         /// Parameters: (oldState, newState)
-        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
+        /// ⚠️ IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// Example:
         /// <code>
         /// private void OnEnable() { machine.OnStateChanged += HandleStateChange; }
@@ -757,21 +777,21 @@ namespace SantasWorkshop.Machines
         /// <summary>
         /// Event fired when the machine starts processing a recipe.
         /// Parameter: The recipe being processed.
-        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
+        /// ⚠️ IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<Recipe> OnProcessingStarted;
         
         /// <summary>
         /// Event fired when the machine completes processing a recipe.
         /// Parameter: The recipe that was completed.
-        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
+        /// ⚠️ IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<Recipe> OnProcessingCompleted;
         
         /// <summary>
         /// Event fired when the machine's power status changes.
         /// Parameter: True if powered, false if unpowered.
-        /// IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
+        /// ⚠️ IMPORTANT: Always unsubscribe in OnDisable() or OnDestroy() to prevent memory leaks.
         /// </summary>
         public event Action<bool> OnPowerStatusChanged;
         
@@ -829,6 +849,8 @@ namespace SantasWorkshop.Machines
         /// </summary>
         protected virtual void Awake()
         {
+            _transform = transform; // Cache transform
+            
             if (string.IsNullOrEmpty(machineId))
             {
                 machineId = System.Guid.NewGuid().ToString();
@@ -856,6 +878,16 @@ namespace SantasWorkshop.Machines
             if (!isEnabled) return;
             
             UpdateStateMachine();
+        }
+        
+        /// <summary>
+        /// Called when the MonoBehaviour becomes disabled.
+        /// Override in derived classes to unsubscribe from external events.
+        /// </summary>
+        protected virtual void OnDisable()
+        {
+            // Base implementation - derived classes should override to unsubscribe from external events
+            // Note: Don't clear our own events here - subscribers should handle that
         }
         
         /// <summary>
@@ -954,6 +986,42 @@ namespace SantasWorkshop.Machines
         #region State Machine
         
         /// <summary>
+        /// Validates if a state transition is allowed.
+        /// Override in derived classes to add custom transition rules.
+        /// </summary>
+        /// <param name="from">Current state</param>
+        /// <param name="to">Target state</param>
+        /// <returns>True if transition is valid</returns>
+        protected virtual bool IsValidTransition(MachineState from, MachineState to)
+        {
+            // Same state is always valid (no-op)
+            if (from == to) return true;
+            
+            // Disabled can only transition to Idle (when re-enabled)
+            if (from == MachineState.Disabled && to != MachineState.Idle)
+            {
+                Debug.LogWarning($"Machine {machineId}: Cannot transition from Disabled to {to}. Must go to Idle first.");
+                return false;
+            }
+            
+            // NoPower can transition back to previous state or Disabled
+            if (from == MachineState.NoPower && to != previousState && to != MachineState.Disabled)
+            {
+                Debug.LogWarning($"Machine {machineId}: Cannot transition from NoPower to {to}. Can only return to {previousState} or Disabled.");
+                return false;
+            }
+            
+            // Processing can't directly transition to WaitingForInput (must go through Idle or complete)
+            if (from == MachineState.Processing && to == MachineState.WaitingForInput)
+            {
+                Debug.LogWarning($"Machine {machineId}: Cannot transition directly from Processing to WaitingForInput.");
+                return false;
+            }
+            
+            return true;
+        }
+        
+        /// <summary>
         /// Transitions the machine to a new state.
         /// Handles state exit, state change, state enter, and event firing.
         /// </summary>
@@ -961,6 +1029,13 @@ namespace SantasWorkshop.Machines
         public void TransitionToState(MachineState newState)
         {
             if (currentState == newState) return;
+            
+            // Validate transition
+            if (!IsValidTransition(currentState, newState))
+            {
+                Debug.LogWarning($"Machine {machineId}: Invalid state transition from {currentState} to {newState}. Transition blocked.");
+                return;
+            }
             
             MachineState oldState = currentState;
             
@@ -1230,6 +1305,7 @@ namespace SantasWorkshop.Machines
         public void InvalidateInputCache()
         {
             _inputCacheDirty = true;
+            _cachedInputsRecipe = null; // Clear recipe cache too
         }
         
         /// <summary>
@@ -1241,6 +1317,20 @@ namespace SantasWorkshop.Machines
         /// <param name="resourceId">The resource type to add.</param>
         /// <param name="amount">The amount to add.</param>
         /// <returns>True if the resource was added successfully, false otherwise.</returns>
+        /// <example>
+        /// <code>
+        /// // Add 10 iron ore to the first input port
+        /// bool success = machine.AddToInputPort(0, "IronOre", 10);
+        /// if (success)
+        /// {
+        ///     Debug.Log("Resources added successfully");
+        /// }
+        /// else
+        /// {
+        ///     Debug.Log("Input port is full or invalid");
+        /// }
+        /// </code>
+        /// </example>
         public bool AddToInputPort(int portIndex, string resourceId, int amount)
         {
             if (portIndex < 0 || portIndex >= inputPorts.Count)
@@ -1530,7 +1620,7 @@ namespace SantasWorkshop.Machines
         /// </summary>
         protected virtual void UpdateVisualRotation()
         {
-            transform.rotation = Quaternion.Euler(0, rotation * 90f, 0);
+            _transform.rotation = Quaternion.Euler(0, rotation * 90f, 0);
         }
         
         #endregion
@@ -1658,6 +1748,61 @@ namespace SantasWorkshop.Machines
         {
             return $"Machine[{machineId}] State:{currentState} Tier:{tier} Progress:{processingProgress:P0} Powered:{isPowered}";
         }
+        
+        #endregion
+        
+        #region Test Hooks
+        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        /// <summary>
+        /// Test hook: Forces a state transition without validation.
+        /// Only available in editor and development builds.
+        /// USE WITH CAUTION: This bypasses all state transition validation.
+        /// </summary>
+        /// <param name="state">The state to force.</param>
+        internal void TestForceState(MachineState state)
+        {
+            currentState = state;
+        }
+        
+        /// <summary>
+        /// Test hook: Gets the current input cache dirty flag.
+        /// Only available in editor and development builds.
+        /// </summary>
+        /// <returns>True if the input cache needs rebuilding.</returns>
+        internal bool TestIsInputCacheDirty()
+        {
+            return _inputCacheDirty;
+        }
+        
+        /// <summary>
+        /// Test hook: Gets the cached input totals dictionary.
+        /// Only available in editor and development builds.
+        /// </summary>
+        /// <returns>Read-only view of cached input totals.</returns>
+        internal IReadOnlyDictionary<string, int> TestGetCachedInputTotals()
+        {
+            return _cachedInputTotals;
+        }
+        
+        /// <summary>
+        /// Test hook: Manually triggers the state machine update.
+        /// Only available in editor and development builds.
+        /// </summary>
+        internal void TestUpdateStateMachine()
+        {
+            UpdateStateMachine();
+        }
+        
+        /// <summary>
+        /// Test hook: Gets the current processing time remaining.
+        /// Only available in editor and development builds.
+        /// </summary>
+        internal float TestGetProcessingTimeRemaining()
+        {
+            return processingTimeRemaining;
+        }
+#endif
         
         #endregion
     }

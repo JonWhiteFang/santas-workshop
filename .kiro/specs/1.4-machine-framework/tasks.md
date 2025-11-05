@@ -208,7 +208,10 @@ This document outlines the implementation tasks for the Machine Framework system
   - Configure port positions and buffer capacities
   - _Requirements: 2, 3, 14_
 
-- [ ] 23. Create test scene
+- [x] 23. Create test scene
+
+
+
   - Create new test scene for Machine Framework
   - Add GridManager to scene (from Grid System spec)
   - Add ResourceManager to scene (from Resource System spec)
