@@ -6,29 +6,34 @@ namespace SantasWorkshop.Data
     public enum MachineState
     {
         /// <summary>
-        /// Machine is not powered or has been disabled.
-        /// </summary>
-        Offline,
-
-        /// <summary>
-        /// Machine is powered but not actively working.
+        /// Machine is idle, ready to work but not currently processing.
         /// </summary>
         Idle,
 
         /// <summary>
-        /// Machine is actively processing or producing.
+        /// Machine is waiting for input resources to become available.
         /// </summary>
-        Working,
+        WaitingForInput,
 
         /// <summary>
-        /// Machine is blocked due to full output or empty input.
+        /// Machine is actively processing a recipe.
         /// </summary>
-        Blocked,
+        Processing,
 
         /// <summary>
-        /// Machine has encountered a configuration or runtime error.
+        /// Machine has completed processing but output buffer is full.
         /// </summary>
-        Error
+        WaitingForOutput,
+
+        /// <summary>
+        /// Machine has insufficient power to operate.
+        /// </summary>
+        NoPower,
+
+        /// <summary>
+        /// Machine has been manually disabled by the player.
+        /// </summary>
+        Disabled
     }
 
     /// <summary>

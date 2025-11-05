@@ -380,6 +380,86 @@ namespace SantasWorkshop.Machines
         #region Recipe Processing
         
         /// <summary>
+        /// Validates a recipe for use with this machine.
+        /// Checks all requirements and constraints.
+        /// </summary>
+        /// <param name="recipe">The recipe to validate.</param>
+        /// <param name="error">Output parameter containing the error message if validation fails.</param>
+        /// <returns>True if the recipe is valid, false otherwise.</returns>
+        protected virtual bool ValidateRecipe(Recipe recipe, out string error)
+        {
+            error = null;
+            
+            if (recipe == null)
+            {
+                error = "Recipe is null";
+                return false;
+            }
+            
+            if (recipe.inputs == null || recipe.inputs.Length == 0)
+            {
+                error = $"Recipe '{recipe.recipeName}' has no inputs";
+                return false;
+            }
+            
+            if (recipe.outputs == null || recipe.outputs.Length == 0)
+            {
+                error = $"Recipe '{recipe.recipeName}' has no outputs";
+                return false;
+            }
+            
+            if (recipe.processingTime <= 0f)
+            {
+                error = $"Recipe '{recipe.recipeName}' has invalid processing time: {recipe.processingTime}";
+                return false;
+            }
+            
+            if (recipe.powerConsumption < 0f)
+            {
+                error = $"Recipe '{recipe.recipeName}' has negative power consumption: {recipe.powerConsumption}";
+                return false;
+            }
+            
+            if (recipe.requiredTier > tier)
+            {
+                error = $"Recipe '{recipe.recipeName}' requires tier {recipe.requiredTier}, but machine is tier {tier}";
+                return false;
+            }
+            
+            // Validate input resource IDs
+            for (int i = 0; i < recipe.inputs.Length; i++)
+            {
+                if (string.IsNullOrEmpty(recipe.inputs[i].resourceId))
+                {
+                    error = $"Recipe '{recipe.recipeName}' has input at index {i} with empty resourceId";
+                    return false;
+                }
+                if (recipe.inputs[i].amount <= 0)
+                {
+                    error = $"Recipe '{recipe.recipeName}' has input at index {i} with invalid amount: {recipe.inputs[i].amount}";
+                    return false;
+                }
+            }
+            
+            // Validate output resource IDs
+            for (int i = 0; i < recipe.outputs.Length; i++)
+            {
+                if (string.IsNullOrEmpty(recipe.outputs[i].resourceId))
+                {
+                    error = $"Recipe '{recipe.recipeName}' has output at index {i} with empty resourceId";
+                    return false;
+                }
+                if (recipe.outputs[i].amount <= 0)
+                {
+                    error = $"Recipe '{recipe.recipeName}' has output at index {i} with invalid amount: {recipe.outputs[i].amount}";
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        /// <summary>
         /// Sets the active recipe for this machine.
         /// Validates the recipe and cancels current processing if needed.
         /// </summary>
@@ -393,17 +473,17 @@ namespace SantasWorkshop.Machines
                 return;
             }
             
-            // Validate recipe is available for this machine
-            if (!IsRecipeAvailable(recipe))
+            // Validate recipe
+            if (!ValidateRecipe(recipe, out string error))
             {
-                Debug.LogWarning($"Recipe {recipe.recipeId} is not available for machine {machineId}");
+                Debug.LogWarning($"Machine {machineId}: Cannot set recipe - {error}");
                 return;
             }
             
-            // Validate tier requirement
-            if (recipe.requiredTier > tier)
+            // Validate recipe is available for this machine
+            if (!IsRecipeAvailable(recipe))
             {
-                Debug.LogWarning($"Recipe {recipe.recipeId} requires tier {recipe.requiredTier}, but machine {machineId} is only tier {tier}");
+                Debug.LogWarning($"Machine {machineId}: Recipe '{recipe.recipeName}' is not in available recipes list");
                 return;
             }
             
@@ -427,15 +507,32 @@ namespace SantasWorkshop.Machines
         /// <returns>True if the recipe can be processed, false otherwise.</returns>
         protected virtual bool CanProcessRecipe(Recipe recipe)
         {
-            if (recipe == null) return false;
-            if (!isPowered) return false;
-            if (!isEnabled) return false;
+            if (recipe == null)
+            {
+                return false;
+            }
+            
+            if (!isPowered)
+            {
+                return false;
+            }
+            
+            if (!isEnabled)
+            {
+                return false;
+            }
             
             // Check input availability
-            if (!HasRequiredInputs(recipe)) return false;
+            if (!HasRequiredInputs(recipe))
+            {
+                return false;
+            }
             
             // Check output space
-            if (!HasOutputSpace(recipe)) return false;
+            if (!HasOutputSpace(recipe))
+            {
+                return false;
+            }
             
             return true;
         }
@@ -447,12 +544,19 @@ namespace SantasWorkshop.Machines
         /// <returns>True if all inputs are available, false otherwise.</returns>
         protected virtual bool HasRequiredInputs(Recipe recipe)
         {
-            if (recipe == null || recipe.inputs == null) return false;
+            if (recipe == null || recipe.inputs == null || recipe.inputs.Length == 0)
+                return false;
             
+            // Rebuild cache once if dirty (amortized O(1) cost)
+            if (_inputCacheDirty)
+            {
+                RebuildInputCache();
+            }
+            
+            // Now use cached values for fast lookup
             foreach (var input in recipe.inputs)
             {
-                int availableAmount = GetInputBufferAmount(input.resourceId);
-                if (availableAmount < input.amount)
+                if (!_cachedInputTotals.TryGetValue(input.resourceId, out int available) || available < input.amount)
                 {
                     return false;
                 }
@@ -467,10 +571,19 @@ namespace SantasWorkshop.Machines
         /// <returns>True if there is space for all outputs, false otherwise.</returns>
         protected virtual bool HasOutputSpace(Recipe recipe)
         {
-            if (recipe == null || recipe.outputs == null) return true;
+            if (recipe == null || recipe.outputs == null || recipe.outputs.Length == 0)
+            {
+                return true; // No outputs required, so space is available
+            }
             
             foreach (var output in recipe.outputs)
             {
+                if (string.IsNullOrEmpty(output.resourceId))
+                {
+                    Debug.LogWarning($"Machine {machineId}: Recipe '{recipe.recipeName}' has output with empty resourceId");
+                    continue;
+                }
+                
                 if (!CanAddToOutputBuffer(output.resourceId, output.amount))
                 {
                     return false;
@@ -495,7 +608,12 @@ namespace SantasWorkshop.Machines
         /// </summary>
         protected virtual void CompleteProcessing()
         {
-            if (activeRecipe == null) return;
+            if (activeRecipe == null)
+            {
+                Debug.LogWarning($"Machine {machineId}: CompleteProcessing called with no active recipe");
+                TransitionToState(MachineState.Idle);
+                return;
+            }
             
             // Consume inputs
             ConsumeInputs(activeRecipe);
@@ -503,6 +621,7 @@ namespace SantasWorkshop.Machines
             // Produce outputs
             ProduceOutputs(activeRecipe);
             
+            // Fire completion event
             OnProcessingCompleted?.Invoke(activeRecipe);
             
             // Check if we can continue processing
@@ -534,11 +653,30 @@ namespace SantasWorkshop.Machines
         /// <param name="recipe">The recipe whose inputs should be consumed.</param>
         protected virtual void ConsumeInputs(Recipe recipe)
         {
-            if (recipe == null || recipe.inputs == null) return;
+            if (recipe == null || recipe.inputs == null || recipe.inputs.Length == 0)
+            {
+                return;
+            }
             
             foreach (var input in recipe.inputs)
             {
-                RemoveFromInputBuffer(input.resourceId, input.amount);
+                if (string.IsNullOrEmpty(input.resourceId))
+                {
+                    Debug.LogWarning($"Machine {machineId}: Skipping input with empty resourceId in recipe '{recipe.recipeName}'");
+                    continue;
+                }
+                
+                if (input.amount <= 0)
+                {
+                    Debug.LogWarning($"Machine {machineId}: Skipping input '{input.resourceId}' with invalid amount {input.amount}");
+                    continue;
+                }
+                
+                bool success = RemoveFromInputBuffer(input.resourceId, input.amount);
+                if (!success)
+                {
+                    Debug.LogError($"Machine {machineId}: Failed to consume {input.amount} of '{input.resourceId}' for recipe '{recipe.recipeName}'");
+                }
             }
         }
         
@@ -548,11 +686,30 @@ namespace SantasWorkshop.Machines
         /// <param name="recipe">The recipe whose outputs should be produced.</param>
         protected virtual void ProduceOutputs(Recipe recipe)
         {
-            if (recipe == null || recipe.outputs == null) return;
+            if (recipe == null || recipe.outputs == null || recipe.outputs.Length == 0)
+            {
+                return;
+            }
             
             foreach (var output in recipe.outputs)
             {
-                AddToOutputBuffer(output.resourceId, output.amount);
+                if (string.IsNullOrEmpty(output.resourceId))
+                {
+                    Debug.LogWarning($"Machine {machineId}: Skipping output with empty resourceId in recipe '{recipe.recipeName}'");
+                    continue;
+                }
+                
+                if (output.amount <= 0)
+                {
+                    Debug.LogWarning($"Machine {machineId}: Skipping output '{output.resourceId}' with invalid amount {output.amount}");
+                    continue;
+                }
+                
+                bool success = AddToOutputBuffer(output.resourceId, output.amount);
+                if (!success)
+                {
+                    Debug.LogError($"Machine {machineId}: Failed to produce {output.amount} of '{output.resourceId}' for recipe '{recipe.recipeName}'. Output buffer may be full.");
+                }
             }
         }
         
@@ -996,14 +1153,31 @@ namespace SantasWorkshop.Machines
         {
             if (activeRecipe == null)
             {
+                Debug.LogError($"Machine {machineId} is in Processing state with no active recipe!");
                 TransitionToState(MachineState.Idle);
+                return;
+            }
+            
+            // Validate speed multiplier
+            if (speedMultiplier <= 0f)
+            {
+                Debug.LogError($"Machine {machineId} has invalid speedMultiplier: {speedMultiplier}. Resetting to 1.0");
+                speedMultiplier = 1f;
+            }
+            
+            // Calculate total processing time
+            float totalTime = activeRecipe.processingTime / speedMultiplier;
+            if (totalTime <= 0f)
+            {
+                Debug.LogError($"Machine {machineId} has invalid processing time calculation. Recipe time: {activeRecipe.processingTime}, Speed multiplier: {speedMultiplier}");
+                CompleteProcessing();
                 return;
             }
             
             // Update progress
             float deltaTime = Time.deltaTime;
             processingTimeRemaining -= deltaTime;
-            processingProgress = 1f - (processingTimeRemaining / (activeRecipe.processingTime / speedMultiplier));
+            processingProgress = Mathf.Clamp01(1f - (processingTimeRemaining / totalTime));
             
             // Check if processing is complete
             if (processingTimeRemaining <= 0f)
@@ -1048,6 +1222,73 @@ namespace SantasWorkshop.Machines
         #endregion
         
         #region Buffer Management
+        
+        /// <summary>
+        /// Invalidates the input buffer cache.
+        /// Call this whenever input ports are modified externally (e.g., by logistics system).
+        /// </summary>
+        public void InvalidateInputCache()
+        {
+            _inputCacheDirty = true;
+        }
+        
+        /// <summary>
+        /// Adds resources to a specific input port.
+        /// This is the preferred method for external systems to add resources.
+        /// Automatically invalidates the input cache.
+        /// </summary>
+        /// <param name="portIndex">The index of the input port.</param>
+        /// <param name="resourceId">The resource type to add.</param>
+        /// <param name="amount">The amount to add.</param>
+        /// <returns>True if the resource was added successfully, false otherwise.</returns>
+        public bool AddToInputPort(int portIndex, string resourceId, int amount)
+        {
+            if (portIndex < 0 || portIndex >= inputPorts.Count)
+            {
+                Debug.LogWarning($"Machine {machineId}: Invalid input port index {portIndex}");
+                return false;
+            }
+            
+            bool success = inputPorts[portIndex].AddResource(resourceId, amount);
+            if (success)
+            {
+                InvalidateInputCache();
+                
+                // Check if we can now start processing
+                if (currentState == MachineState.WaitingForInput && CanProcessRecipe(activeRecipe))
+                {
+                    TransitionToState(MachineState.Processing);
+                }
+            }
+            return success;
+        }
+        
+        /// <summary>
+        /// Extracts resources from a specific output port.
+        /// This is the preferred method for external systems (logistics) to extract resources.
+        /// </summary>
+        /// <param name="portIndex">The index of the output port.</param>
+        /// <param name="resourceId">The resource type to extract.</param>
+        /// <param name="amount">The amount to extract.</param>
+        /// <returns>The actual amount extracted.</returns>
+        public int ExtractFromOutputPort(int portIndex, string resourceId, int amount)
+        {
+            if (portIndex < 0 || portIndex >= outputPorts.Count)
+            {
+                Debug.LogWarning($"Machine {machineId}: Invalid output port index {portIndex}");
+                return 0;
+            }
+            
+            int extracted = outputPorts[portIndex].ExtractResource(resourceId, amount);
+            
+            // Check if we can now continue processing
+            if (extracted > 0 && currentState == MachineState.WaitingForOutput && HasOutputSpace())
+            {
+                TransitionToState(MachineState.Idle);
+            }
+            
+            return extracted;
+        }
         
         /// <summary>
         /// Gets the total amount of a specific resource across all input ports.
