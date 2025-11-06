@@ -104,7 +104,7 @@
   - Add error logs for critical failures
   - _Requirements: All requirements_
 
-- [ ] 10. Create unit tests for calendar system
+- [x] 10. Create unit tests for calendar system
   - Test day counter increments correctly over time
   - Test month and day-of-month calculations for all 365 days
   - Test seasonal phase transitions at days 90, 270, 330, and 365
@@ -112,7 +112,7 @@
   - Test OnSeasonalPhaseChanged event fires on phase transitions
   - _Requirements: 1.1, 1.6_
 
-- [ ] 11. Create unit tests for time speed controls
+- [x] 11. Create unit tests for time speed controls
   - Test pause functionality stops time progression
   - Test resume functionality restarts time progression
   - Test toggle pause switches between paused and running states
@@ -121,7 +121,7 @@
   - Test invalid time speed values are clamped appropriately
   - _Requirements: 1.2, 1.5_
 
-- [ ] 12. Create unit tests for simulation tick system
+- [x] 12. Create unit tests for simulation tick system
   - Test simulation ticks fire at correct intervals (10 Hz default)
   - Test OnSimulationTick event is invoked on each tick
   - Test tick accumulation works correctly with variable frame rates
@@ -129,7 +129,7 @@
   - Test time speed multiplier affects tick rate
   - _Requirements: 1.3, 1.5_
 
-- [ ] 13. Create unit tests for event scheduling
+- [x] 13. Create unit tests for event scheduling
   - Test ScheduleEvent creates events that trigger after specified delay
   - Test ScheduleEventAtDay creates events that trigger on specified day
   - Test events execute in correct order when multiple trigger simultaneously
@@ -138,7 +138,7 @@
   - Test null callback returns invalid handle with error log
   - _Requirements: 1.4_
 
-- [ ] 14. Create unit tests for save/load system
+- [x] 14. Create unit tests for save/load system
   - Test GetSaveData serializes current time state correctly
   - Test LoadSaveData restores time state from saved data
   - Test LoadSaveData handles null data gracefully
