@@ -146,7 +146,7 @@
   - Test LoadSaveData validates and corrects negative time values
   - _Requirements: 1.7_
 
-- [ ] 15. Create performance tests
+- [x] 15. Create performance tests
   - Test event scheduling with 1000 scheduled events
   - Test event processing stays under 100 events per frame limit
   - Test simulation tick overhead with 0, 10, and 100 subscribers
@@ -154,7 +154,7 @@
   - Test tick timing accuracy over extended periods
   - _Requirements: 1.8_
 
-- [ ] 16. Create integration test scene
+- [x] 16. Create integration test scene
   - Create test scene with TimeManager instance
   - Add test UI showing current day, month, phase, and time speed
   - Add buttons for pause/resume and time speed changes (1x, 2x, 5x)
