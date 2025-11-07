@@ -447,16 +447,7 @@ namespace SantasWorkshop.Tests
             while (elapsed < seconds)
             {
                 float deltaTime = Mathf.Min(fixedDeltaTime, seconds - elapsed);
-                
-                // Manually set Time.deltaTime for testing
-                typeof(Time).GetField("deltaTime", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-                    ?.SetValue(null, deltaTime);
-                
-                // Call Update through reflection since it's private
-                var updateMethod = typeof(TimeManager).GetMethod("Update", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                updateMethod?.Invoke(_timeManager, null);
-                
+                _timeManager.AdvanceTimeForTesting(deltaTime);
                 elapsed += deltaTime;
             }
         }
@@ -474,16 +465,7 @@ namespace SantasWorkshop.Tests
             while (elapsed < totalSeconds)
             {
                 float deltaTime = Mathf.Min(deltaPattern[patternIndex], totalSeconds - elapsed);
-                
-                // Manually set Time.deltaTime for testing
-                typeof(Time).GetField("deltaTime", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-                    ?.SetValue(null, deltaTime);
-                
-                // Call Update through reflection since it's private
-                var updateMethod = typeof(TimeManager).GetMethod("Update", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                updateMethod?.Invoke(_timeManager, null);
-                
+                _timeManager.AdvanceTimeForTesting(deltaTime);
                 elapsed += deltaTime;
                 patternIndex = (patternIndex + 1) % deltaPattern.Length;
             }

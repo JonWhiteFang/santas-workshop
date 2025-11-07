@@ -575,7 +575,7 @@ namespace SantasWorkshop.Tests
         #region Helper Methods
 
         /// <summary>
-        /// Simulates time progression by calling Update repeatedly.
+        /// Simulates time progression by calling AdvanceTimeForTesting repeatedly.
         /// </summary>
         /// <param name="seconds">Number of seconds to simulate.</param>
         private void SimulateTime(float seconds)
@@ -586,16 +586,7 @@ namespace SantasWorkshop.Tests
             while (elapsed < seconds)
             {
                 float deltaTime = Mathf.Min(fixedDeltaTime, seconds - elapsed);
-                
-                // Manually set Time.deltaTime for testing
-                typeof(Time).GetField("deltaTime", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-                    ?.SetValue(null, deltaTime);
-                
-                // Call Update through reflection since it's private
-                var updateMethod = typeof(TimeManager).GetMethod("Update", 
-                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                updateMethod?.Invoke(_timeManager, null);
-                
+                _timeManager.AdvanceTimeForTesting(deltaTime);
                 elapsed += deltaTime;
             }
         }

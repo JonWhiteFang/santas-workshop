@@ -228,7 +228,7 @@ namespace SantasWorkshop.Core
 
         // Event scheduling (Dictionary for O(1) lookups)
         private Dictionary<int, ScheduledEvent> _scheduledEvents = new Dictionary<int, ScheduledEvent>();
-        private HashSet<int> _cancelledEventIds = new HashSet<int>();
+        private List<int> _eventsToRemove = new List<int>();
         private int _nextEventId = 1;
 
         // Calendar optimization
@@ -532,9 +532,8 @@ namespace SantasWorkshop.Core
                 return;
             }
 
-            if (_scheduledEvents.ContainsKey(handle.EventId))
+            if (_scheduledEvents.Remove(handle.EventId))
             {
-                _cancelledEventIds.Add(handle.EventId);
                 LogVerbose($"Cancelled event {handle.EventId}");
             }
             else
@@ -669,7 +668,6 @@ namespace SantasWorkshop.Core
 
             // Restore scheduled events using factory
             _scheduledEvents.Clear();
-            _cancelledEventIds.Clear();
             
             int restoredCount = 0;
             foreach (var eventData in data.scheduledEvents)
@@ -731,11 +729,39 @@ namespace SantasWorkshop.Core
             ResetToDefaults();
             ClearAllEventSubscriptions();
             _scheduledEvents.Clear();
-            _cancelledEventIds.Clear();
+            _eventsToRemove.Clear();
             _nextEventId = 1;
             _tickAccumulator = 0.0;
             _nextDayThreshold = CurrentDay * secondsPerDay;
             LogInfo("TimeManager reset for testing");
+        }
+
+        /// <summary>
+        /// Manually advances time for testing purposes.
+        /// Only available in editor/test builds.
+        /// </summary>
+        /// <param name="deltaTime">Time to advance in seconds.</param>
+        public void AdvanceTimeForTesting(float deltaTime)
+        {
+            if (IsPaused)
+                return;
+
+            // Update delta times
+            UnscaledDeltaTime = deltaTime;
+            ScaledDeltaTime = deltaTime * TimeSpeed;
+
+            // Accumulate elapsed time
+            TotalRealTime += UnscaledDeltaTime;
+            TotalGameTime += ScaledDeltaTime;
+
+            // Update calendar (check for day changes)
+            UpdateCalendar();
+
+            // Process simulation ticks
+            ProcessSimulationTicks();
+
+            // Process scheduled events
+            ProcessScheduledEvents();
         }
 #endif
 
@@ -783,7 +809,6 @@ namespace SantasWorkshop.Core
             UpdateMonthAndDay();
             UpdateSeasonalPhase();
             _scheduledEvents.Clear();
-            _cancelledEventIds.Clear();
             _nextDayThreshold = secondsPerDay;
         }
 
@@ -838,15 +863,21 @@ namespace SantasWorkshop.Core
             }
             
             // Invoke events after calculating count to avoid issues if handlers modify time
-            for (int i = 0; i < ticksToProcess; i++)
+            // Cache the delegate to avoid issues if it's modified during invocation
+            var tickDelegate = OnSimulationTick;
+            if (tickDelegate != null)
             {
-                try
+                for (int i = 0; i < ticksToProcess; i++)
                 {
-                    OnSimulationTick?.Invoke();
-                }
-                catch (Exception ex)
-                {
-                    LogError($"Error in simulation tick subscriber: {ex.Message}\n{ex.StackTrace}");
+                    try
+                    {
+                        tickDelegate.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError($"Error in simulation tick subscriber: {ex.Message}\n{ex.StackTrace}");
+                        // Continue processing remaining ticks even if one fails
+                    }
                 }
             }
         }
@@ -854,13 +885,17 @@ namespace SantasWorkshop.Core
         /// <summary>
         /// Processes scheduled events that are ready to trigger.
         /// Limits processing to MAX_EVENTS_PER_FRAME events per frame for performance.
-        /// Uses Dictionary for O(1) lookups and HashSet for cancelled events.
+        /// Uses Dictionary for O(1) lookups.
         /// </summary>
         private void ProcessScheduledEvents()
         {
-            int eventsProcessed = 0;
-            var eventsToRemove = new List<int>();
+            if (_scheduledEvents.Count == 0)
+                return;
 
+            int eventsProcessed = 0;
+            _eventsToRemove.Clear();
+
+            // Collect events to process (avoid modifying collection during iteration)
             foreach (var kvp in _scheduledEvents)
             {
                 if (eventsProcessed >= MAX_EVENTS_PER_FRAME)
@@ -869,18 +904,21 @@ namespace SantasWorkshop.Core
                 int eventId = kvp.Key;
                 var evt = kvp.Value;
 
-                // Skip cancelled events
-                if (_cancelledEventIds.Contains(eventId))
-                {
-                    eventsToRemove.Add(eventId);
-                    continue;
-                }
-
                 bool shouldTrigger = evt.TriggerDay.HasValue 
                     ? CurrentDay >= evt.TriggerDay.Value 
                     : TotalGameTime >= evt.TriggerTime;
 
                 if (shouldTrigger)
+                {
+                    _eventsToRemove.Add(eventId);
+                    eventsProcessed++;
+                }
+            }
+
+            // Execute and remove triggered events
+            foreach (int eventId in _eventsToRemove)
+            {
+                if (_scheduledEvents.TryGetValue(eventId, out var evt))
                 {
                     try
                     {
@@ -891,16 +929,8 @@ namespace SantasWorkshop.Core
                         LogError($"Error executing scheduled event {eventId}: {ex.Message}\n{ex.StackTrace}");
                     }
                     
-                    eventsToRemove.Add(eventId);
-                    eventsProcessed++;
+                    _scheduledEvents.Remove(eventId);
                 }
-            }
-
-            // Clean up processed and cancelled events
-            foreach (int id in eventsToRemove)
-            {
-                _scheduledEvents.Remove(id);
-                _cancelledEventIds.Remove(id);
             }
             
             if (eventsProcessed >= MAX_EVENTS_PER_FRAME && _scheduledEvents.Count > 0)

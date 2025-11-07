@@ -1,0 +1,22 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.2/staging' branch; Version is '6000.2.10f1 (d3d30d158480) revision 13882125'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) 64bit Core' Language: 'en' Physical Memory: 63139 MB
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-jono2" at "2025-11-07T05:57:02.2426911Z"
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2025-11-07T05:57:02Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.2.10f1\Editor\Unity.exe
+-runTests
+-batchmode
+-projectPath
+SantasWorkshopAutomation
+-testPlatform
+EditMode
+-testResults
+SantasWorkshopAutomation\TestResults_Fixed.xml
+-logFile
+SantasWorkshopAutomation\TestRun.log
+Successfully changed project path to: C:/Projects/santas-workshop/SantasWorkshopAutomation
+C:/Projects/santas-workshop/SantasWorkshopAutomation
+Exiting without the bug reporter. Application will terminate with return code 1

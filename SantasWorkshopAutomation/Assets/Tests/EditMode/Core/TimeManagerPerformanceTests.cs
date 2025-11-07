@@ -444,18 +444,11 @@ namespace SantasWorkshop.Tests.Core
         #region Helper Methods
 
         /// <summary>
-        /// Simulates a single frame update by manually calling Update via reflection.
+        /// Simulates a single frame update using AdvanceTimeForTesting.
         /// </summary>
         private void SimulateFrame(float deltaTime)
         {
-            // Set Time.deltaTime for this frame
-            typeof(Time).GetField("deltaTime", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-                ?.SetValue(null, deltaTime);
-
-            // Call Update method via reflection
-            var updateMethod = typeof(TimeManager).GetMethod("Update", 
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            updateMethod?.Invoke(_timeManager, null);
+            _timeManager.AdvanceTimeForTesting(deltaTime);
         }
 
         #endregion
