@@ -32,14 +32,14 @@ namespace SantasWorkshop.Tests
             // Clean up
             if (_timeManagerObject != null)
             {
-                Object.DestroyImmediate(_timeManagerObject);
+                UnityEngine.Object.DestroyImmediate(_timeManagerObject);
             }
             
             // Clear singleton reference
             if (TimeManager.Instance != null)
             {
                 var instanceObj = TimeManager.Instance.gameObject;
-                Object.DestroyImmediate(instanceObj);
+                UnityEngine.Object.DestroyImmediate(instanceObj);
             }
         }
 
@@ -279,8 +279,8 @@ namespace SantasWorkshop.Tests
         [Test]
         public void CancelScheduledEvent_InvalidHandle_DoesNotThrow()
         {
-            // Arrange
-            var invalidHandle = new ScheduledEventHandle { EventId = -1 };
+            // Arrange - Create invalid handle using default constructor
+            var invalidHandle = default(ScheduledEventHandle);
 
             // Act & Assert
             Assert.DoesNotThrow(() => _timeManager.CancelScheduledEvent(invalidHandle),

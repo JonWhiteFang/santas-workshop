@@ -32,14 +32,14 @@ namespace SantasWorkshop.Tests
             // Clean up
             if (_timeManagerObject != null)
             {
-                Object.DestroyImmediate(_timeManagerObject);
+                UnityEngine.Object.DestroyImmediate(_timeManagerObject);
             }
             
             // Clear singleton reference
             if (TimeManager.Instance != null)
             {
                 var instanceObj = TimeManager.Instance.gameObject;
-                Object.DestroyImmediate(instanceObj);
+                UnityEngine.Object.DestroyImmediate(instanceObj);
             }
         }
 
@@ -635,9 +635,9 @@ namespace SantasWorkshop.Tests
             _timeManager.ResetForTesting();
             
             // Register event types with factory
-            ScheduledEventFactory.RegisterEventType("Event1", () => { });
-            ScheduledEventFactory.RegisterEventType("Event2", () => { });
-            ScheduledEventFactory.RegisterEventType("Event3", () => { });
+            ScheduledEventFactory.RegisterEventType("Event1", () => () => { });
+            ScheduledEventFactory.RegisterEventType("Event2", () => () => { });
+            ScheduledEventFactory.RegisterEventType("Event3", () => () => { });
             
             _timeManager.LoadSaveData(saveData);
 
@@ -651,7 +651,7 @@ namespace SantasWorkshop.Tests
         {
             // Arrange
             bool eventTriggered = false;
-            ScheduledEventFactory.RegisterEventType("TestEvent", () => eventTriggered = true);
+            ScheduledEventFactory.RegisterEventType("TestEvent", () => () => eventTriggered = true);
             _timeManager.ScheduleEvent(1f, "TestEvent", () => eventTriggered = true);
 
             // Act - Save, reset, load

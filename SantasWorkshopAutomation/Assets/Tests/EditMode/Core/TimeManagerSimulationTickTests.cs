@@ -32,14 +32,14 @@ namespace SantasWorkshop.Tests
             // Clean up
             if (_timeManagerObject != null)
             {
-                Object.DestroyImmediate(_timeManagerObject);
+                UnityEngine.Object.DestroyImmediate(_timeManagerObject);
             }
             
             // Clear singleton reference
             if (TimeManager.Instance != null)
             {
                 var instanceObj = TimeManager.Instance.gameObject;
-                Object.DestroyImmediate(instanceObj);
+                UnityEngine.Object.DestroyImmediate(instanceObj);
             }
         }
 
