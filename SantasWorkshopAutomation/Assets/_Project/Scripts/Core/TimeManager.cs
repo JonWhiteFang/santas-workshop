@@ -56,6 +56,11 @@ namespace SantasWorkshop.Core
 
         // Validation Thresholds
         private const float TIME_SPEED_EPSILON = 0.001f;
+        
+        // Event Trigger Epsilon (for floating-point precision in event scheduling)
+        // This epsilon ensures events trigger even with minor floating-point drift
+        // that can occur during time accumulation and calculations.
+        private const float EVENT_TRIGGER_EPSILON = 0.001f;
 
         #endregion
 
@@ -906,7 +911,7 @@ namespace SantasWorkshop.Core
 
                 bool shouldTrigger = evt.TriggerDay.HasValue 
                     ? CurrentDay >= evt.TriggerDay.Value 
-                    : TotalGameTime >= evt.TriggerTime;
+                    : TotalGameTime >= evt.TriggerTime - EVENT_TRIGGER_EPSILON;
 
                 if (shouldTrigger)
                 {
