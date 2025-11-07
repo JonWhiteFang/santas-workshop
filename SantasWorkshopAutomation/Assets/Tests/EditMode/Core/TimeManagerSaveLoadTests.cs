@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using SantasWorkshop.Core;
 using System;
+using System.Text.RegularExpressions;
 
 namespace SantasWorkshop.Tests
 {
@@ -387,6 +389,7 @@ namespace SantasWorkshop.Tests
         public void LoadSaveData_NullData_ResetsToDefaults()
         {
             // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Cannot load null save data"));
             SimulateTime(10 * 60f); // Advance state
             _timeManager.SetTimeSpeed(5f);
 
@@ -515,6 +518,7 @@ namespace SantasWorkshop.Tests
         public void LoadSaveData_NaNTimeSpeed_FallsBackToDefault()
         {
             // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Invalid timeSpeed"));
             var saveData = new TimeSaveData
             {
                 currentDay = 1,
@@ -578,6 +582,7 @@ namespace SantasWorkshop.Tests
         public void LoadSaveData_NaNTotalGameTime_ResetsToZero()
         {
             // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Invalid totalGameTime"));
             var saveData = new TimeSaveData
             {
                 currentDay = 1,
@@ -600,6 +605,7 @@ namespace SantasWorkshop.Tests
         public void LoadSaveData_InfinityTotalRealTime_ResetsToZero()
         {
             // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Invalid totalRealTime"));
             var saveData = new TimeSaveData
             {
                 currentDay = 1,

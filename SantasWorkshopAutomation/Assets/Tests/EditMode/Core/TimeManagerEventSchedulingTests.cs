@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using SantasWorkshop.Core;
 using System;
+using System.Text.RegularExpressions;
 
 namespace SantasWorkshop.Tests
 {
@@ -105,6 +107,9 @@ namespace SantasWorkshop.Tests
         [Test]
         public void ScheduleEvent_NullCallback_ReturnsInvalidHandle()
         {
+            // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Cannot schedule event with null callback"));
+
             // Act
             var handle = _timeManager.ScheduleEvent(1f, null);
 
@@ -229,6 +234,9 @@ namespace SantasWorkshop.Tests
         [Test]
         public void ScheduleEventAtDay_NullCallback_ReturnsInvalidHandle()
         {
+            // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Cannot schedule event with null callback"));
+
             // Act
             var handle = _timeManager.ScheduleEventAtDay(10, null);
 
@@ -483,6 +491,9 @@ namespace SantasWorkshop.Tests
         [Test]
         public void EventHandle_IsValid_FalseForNullCallback()
         {
+            // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Cannot schedule event with null callback"));
+
             // Act
             var handle = _timeManager.ScheduleEvent(1f, null);
 
@@ -555,6 +566,7 @@ namespace SantasWorkshop.Tests
         public void EventScheduling_HandlesEventException()
         {
             // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Error executing scheduled event"));
             bool event1Triggered = false;
             bool event2Triggered = false;
             

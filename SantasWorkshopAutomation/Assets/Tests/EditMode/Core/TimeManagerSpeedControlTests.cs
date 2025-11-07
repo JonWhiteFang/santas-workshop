@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using SantasWorkshop.Core;
+using System.Text.RegularExpressions;
 
 namespace SantasWorkshop.Tests
 {
@@ -267,6 +269,9 @@ namespace SantasWorkshop.Tests
         [Test]
         public void SetTimeSpeed_NaN_FallsBackToDefault()
         {
+            // Arrange
+            LogAssert.Expect(LogType.Error, new Regex("Invalid time speed"));
+
             // Act
             _timeManager.SetTimeSpeed(float.NaN);
 
@@ -278,6 +283,9 @@ namespace SantasWorkshop.Tests
         [Test]
         public void SetTimeSpeed_Infinity_FallsBackToDefault()
         {
+            // Arrange
+            LogAssert.Expect(LogType.Warning, new Regex("Time speed .* exceeds maximum"));
+
             // Act
             _timeManager.SetTimeSpeed(float.PositiveInfinity);
 
